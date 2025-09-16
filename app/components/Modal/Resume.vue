@@ -6,9 +6,7 @@ UDrawer.modal-resume(v-model:open="open" description="My Resume" direction="top"
       UButton(icon="i-heroicons-printer" size="sm" variant="soft" color="primary" @click="printCv") Print
 
   template(#body)
-    //- Printable CV content
     section.cv-print.mx-auto.max-w-3xl.bg-white.text-gray-900.rounded-md.shadow-sm.p-6
-      // Header
       header.border-b.pb-4.mb-6
         h1.text-2xl.font-bold.leading-tight {{ cv.name }}
         p.text-sm.text-gray-600 {{ cv.title }}
