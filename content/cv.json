@@ -1,0 +1,160 @@
+{
+  "name": "Jose Martin Ruiz Rico",
+  "title": "Full Stack Developer focused on Vue & Nuxt",
+  "location": "Mexico",
+  "contact": {
+    "website": "https://sr3pp.dev",
+    "linkedin": "https://linkedin.com/in/sr3pp",
+    "email": "martin.ru@outlook.com"
+  },
+  "profile": "Frontend-focused full stack developer with 10+ years of experience. Certified Senior Vue Developer, with deep expertise in Vue, Nuxt, and modern web tooling. Known for building modular, scalable, and performant applications across diverse industries like banking, travel, and e-commerce.",
+  "experience": [
+    {
+      "company": "Exclusive Resorts",
+      "role": "Frontend Developer",
+      "start_date": "2024-03",
+      "end_date": null,
+      "highlights": [
+        "Maintained and optimized the Nuxt 3 public site.",
+        "Migrated to Prismic Slice Machine.",
+        "Handled Salesforce content management and integrations."
+      ]
+    },
+    {
+      "company": "Cars.com",
+      "role": "Frontend Developer",
+      "start_date": "2023-01",
+      "end_date": "2024-02",
+      "highlights": [
+        "Built and maintained web components using Lit and PHP.",
+        "Improved UI/UX and frontend performance.",
+        "Collaborated with engineering teams on QA and maintainability."
+      ]
+    },
+    {
+      "company": "Charter Solutions",
+      "role": "Frontend Developer",
+      "start_date": "2022-06",
+      "end_date": "2023-01",
+      "highlights": [
+        "Developed responsive React interfaces for Prism application.",
+        "Customized themes and ensured accessibility."
+      ]
+    },
+    {
+      "company": "Banamex (Citibanamex)",
+      "role": "Frontend Developer",
+      "start_date": "2018-07",
+      "end_date": null,
+      "highlights": [
+        "Led frontend migration to web components.",
+        "Ensured accessibility and responsive design.",
+        "Optimized site performance and frontend workflow."
+      ]
+    },
+    {
+      "company": "Pengo",
+      "role": "Magento Developer",
+      "start_date": "2017",
+      "end_date": "2018",
+      "highlights": [
+        "Created custom Magento modules and themes.",
+        "Integrated third-party services and optimized performance."
+      ]
+    },
+    {
+      "company": "Queremos Comer",
+      "role": "Webmaster",
+      "start_date": "2016",
+      "end_date": "2017",
+      "highlights": [
+        "Maintained and updated websites with relevant, appealing content.",
+        "Handled technical operations, ensured security and performance.",
+        "Used analytics to improve UX and engagement."
+      ]
+    },
+    {
+      "company": "Kaloni",
+      "role": "Webmaster Jr.",
+      "start_date": "2015",
+      "end_date": "2016",
+      "highlights": [
+        "Maintained and updated corporate websites.",
+        "Assisted with technical fixes and site enhancements.",
+        "Ensured consistent uptime and content accuracy."
+      ]
+    }
+  ],
+  "freelance_projects": [
+    {
+      "name": "Birdsual",
+      "description": "Nuxt 3 + Mongo portfolio site for a designer."
+    },
+    {
+      "name": "Quivi",
+      "description": "E-commerce for autoparts built with Nuxt 2 and Django REST; later rebuilt entirely with Nuxt."
+    },
+    {
+      "name": "All American Cabinetry",
+      "description": "Nuxt 2 + Mongo catalog."
+    },
+    {
+      "name": "ICCN",
+      "description": "Laravel + Vue CRM for coaches."
+    },
+    {
+      "name": "All American Finishing",
+      "description": "Laravel + Vue site for metal finishing."
+    }
+  ],
+  "education": [
+    {
+      "program": "Graphic Design",
+      "institution": "UVM",
+      "start_year": 2010,
+      "end_year": 2014
+    },
+    {
+      "program": "Self-Taught Developer",
+      "institution": null,
+      "start_year": 2014,
+      "end_year": null
+    }
+  ],
+  "skills": {
+    "frontend": [
+      "Vue 3",
+      "Nuxt 3",
+      "Pinia",
+      "Tailwind",
+      "Lit",
+      "Web Components",
+      "React"
+    ],
+    "backend": [
+      "Node.js",
+      "Laravel",
+      "Django REST",
+      "MongoDB",
+      "MySQL"
+    ],
+    "tools": [
+      "Git",
+      "Vercel",
+      "Netlify",
+      "Figma",
+      "Cloudinary",
+      "Prismic",
+      "Salesforce"
+    ],
+    "languages": [
+      "JavaScript",
+      "TypeScript",
+      "PHP",
+      "HTML",
+      "SCSS",
+      "Python"
+    ]
+  },
+  "source": "JoseMartinRuizRico_CV.pdf"
+}

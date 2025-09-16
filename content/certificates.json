@@ -1,0 +1,16 @@
+{
+    "certificates": [
+        {
+            "name": "Mid-level Vue.js Developer",
+            "link": ""
+        },
+        {
+            "name": "Senior Vue.js Developer",
+            "link": ""
+        },
+        {
+            "name": "Mid-level Nuxt.js Developer",
+            "link": ""
+        }
+    ]
+}
