@@ -28,10 +28,10 @@ void templateBindings;
 
 <template lang="pug">
 section.flex.items-center.justify-center.bg-gradient-to-b.from-gray-900.to-black.text-white.overflow-hidden.transition-all.duration-500.ease-out.z-20(:class="{'h-screen': currentPath === '/', 'h-20 sticky w-full top-0 left-0': currentPath !== '/'}")
-  UContainer.flex.flex-col(class="sm:flex-row")
+  UContainer.flex(class="sm:flex-row" :class="{'flex-col': currentPath === '/'}")
     div.w-full(class="sm:w-1/2")
-      NuxtLink.relative.transition-all.duration-500.ease-out(to="/" :class="{'-bottom-10': currentPath !== '/'}")
-        NeonTriangle
+      NuxtLink.relative.transition-all.duration-500.ease-out.flex(to="/" :class="{'sm:-bottom-10': currentPath !== '/'}")
+        NeonTriangle(:class="{'scale-[2]': currentPath !== '/'}" class="sm:scale-[1]")
           NuxtImg(
             src="/img/3pp.webp"
             alt="SR3PP"
@@ -45,7 +45,7 @@ section.flex.items-center.justify-center.bg-gradient-to-b.from-gray-900.to-black
 
       SlotMachine.transition-opacity.duration-500(class="w-full sm:w-2/3" :class="{'!hidden': currentPath !== '/'}" :labels="['Vue Expert', 'Bug Hunter', 'Nuxt Guru🧞‍♂️']")
       
-      ul.flex.gap-5.mx-auto.transition-all.duration-500(:class="{'flex-col items-stretch': currentPath === '/', 'flex-row': currentPath !== '/'}")
+      ul.flex.gap-5.mx-auto.transition-all.duration-500.flex-wrap.justify-center(:class="{'flex-col items-stretch': currentPath === '/', 'flex-row': currentPath !== '/'}")
         li
           UButton.w-full(
             icon="i-heroicons-academic-cap"
