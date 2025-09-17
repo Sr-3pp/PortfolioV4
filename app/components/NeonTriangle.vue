@@ -21,8 +21,8 @@ function animateGradient() {
   }
   const rect = svg.getBoundingClientRect();
   // Use mouse position relative to SVG
-  let relX = ((x.value - rect.left) / rect.width) * 37;
-  let relY = ((y.value - rect.top) / rect.height) * 32.6;
+  const relX = ((x.value - rect.left) / rect.width) * 37;
+  const relY = ((y.value - rect.top) / rect.height) * 32.6;
   // Clamp to inner 50% (25% to 75%)
   const minX = 0.25 * 37;
   const maxX = 0.75 * 37;
@@ -105,9 +105,14 @@ onMounted(() => {
 /* CSS-driven portal animation for the gradient fill */
 
 
+
 .neon-triangle .triangle-bg-clip {
+  --portal-hue: 0deg;
+  --portal-blur: 1.2px;
+  --portal-saturate: 1.1;
   transform-origin: 50% 50%;
   mix-blend-mode: screen;
+  filter: blur(var(--portal-blur)) saturate(var(--portal-saturate)) hue-rotate(var(--portal-hue));
   animation: portal-pulse 3.5s cubic-bezier(0.77,0,0.175,1) infinite, portal-hue 8s linear infinite;
 }
 
@@ -115,22 +120,46 @@ onMounted(() => {
   0% {
     transform: scale(0.98);
     opacity: 0.7;
-    filter: blur(1.2px) saturate(1.1);
+    --portal-blur: 1.2px;
+    --portal-saturate: 1.1;
   }
   50% {
     transform: scale(1.02);
     opacity: 0.85;
-    filter: blur(2.2px) saturate(1.2);
+    --portal-blur: 2.2px;
+    --portal-saturate: 1.2;
   }
   100% {
     transform: scale(0.98);
     opacity: 0.7;
-    filter: blur(1.2px) saturate(1.1);
+    --portal-blur: 1.2px;
+    --portal-saturate: 1.1;
   }
 }
 
 @keyframes portal-hue {
-  0% { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(360deg); }
+  0% { --portal-hue: 0deg; }
+  50% { --portal-hue: 180deg; }
+  100% { --portal-hue: 360deg; }
 }
+
+
+@property --portal-hue {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --portal-blur {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 1.2px;
+}
+
+@property --portal-saturate {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1.1;
+}
+
 </style>

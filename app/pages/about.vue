@@ -71,11 +71,26 @@ const experienceYears = computed(() => `${new Date().getFullYear() - experienceS
 const { data: projectsData } = useNuxtData('projects')
 const { data: certs } = useNuxtData('certificates')
 
-const projectCount = ref(projectsData.value.length)
-const certificateCount = computed(() => (Array.isArray(certs.value.meta.certificates) ? certs.value.meta.certificates.length : 0))
+const projectCount = computed(() => projectsData.value?.length ?? 0)
+const certificateCount = computed(() => {
+  const certificates = certs.value?.meta?.certificates
+  return Array.isArray(certificates) ? certificates.length : 0
+})
 
 // Open projects drawer from About page
 const { openOverlay: openProjects } = useUiOverlay('projects')
+
+const templateBindings = {
+  profile,
+  contact,
+  skills,
+  experienceYears,
+  projectCount,
+  certificateCount,
+  openProjects,
+};
+
+void templateBindings;
 </script>
 
 <style scoped>

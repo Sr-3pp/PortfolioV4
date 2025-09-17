@@ -78,6 +78,21 @@ function submit() {
   // Small delay to reset state
   setTimeout(() => { sending.value = false }, 600)
 }
+
+const templateBindings = {
+  open,
+  email,
+  linkedin,
+  website,
+  copyEmail,
+  submit,
+  sending,
+  includeMeta,
+  form,
+  canSend,
+};
+
+void templateBindings;
 </script>
 
 <style>

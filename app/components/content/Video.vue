@@ -10,7 +10,7 @@
       class="absolute inset-0 h-full w-full"
     />
     <video v-else-if="src" controls class="absolute inset-0 h-full w-full">
-      <source :src="src" :type="type" />
+      <source :src="src" :type="type" >
     </video>
   </div>
 </template>
@@ -23,6 +23,8 @@ const props = withDefaults(defineProps<{
   provider?: 'youtube' | 'vimeo' | 'loom' | 'file'
   aspect?: '16/9' | '4/3' | '1/1'
 }>(), {
+  url: '',
+  src: '',
   provider: 'youtube',
   aspect: '16/9',
   type: 'video/mp4'
@@ -55,4 +57,3 @@ const embedUrl = computed(() => {
 </script>
 
 <style scoped></style>
-

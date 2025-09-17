@@ -20,9 +20,13 @@ withDefaults(defineProps<{
   size?: 'xs' | 'sm' | 'md' | 'lg'
   color?: string
   variant?: 'soft' | 'solid' | 'outline'
-  icon?: string
+  icon?: string | null
 }>(), {
-  items: () => []
+  items: () => [],
+  size: 'sm',
+  color: 'primary',
+  variant: 'soft',
+  icon: null
 })
 </script>
 

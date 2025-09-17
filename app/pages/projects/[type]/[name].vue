@@ -35,10 +35,12 @@ section
 </template>
 
 <script lang="ts" setup>
+import type { ParsedContent } from '@nuxt/content/dist/runtime/types'
+
 const { getProjectBySlug } = useProjects()
 const route = useRoute()
 
-const project = ref<any>(null)
+const project = ref<ParsedContent | null>(null)
 
 const loadProject = async () => {
   const { type, name } = route.params

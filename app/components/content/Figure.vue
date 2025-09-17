@@ -21,14 +21,17 @@
 const props = withDefaults(defineProps<{
   src: string
   alt?: string
-  caption?: string
-  width?: number | string
-  height?: number | string
+  caption?: string | null
+  width?: number | string | null
+  height?: number | string | null
   sizes?: string
   format?: string
   align?: 'left' | 'center' | 'right'
 }>(), {
   alt: '',
+  caption: null,
+  width: null,
+  height: null,
   sizes: '(min-width: 768px) 768px, 100vw',
   format: 'webp',
   align: 'center'
@@ -42,4 +45,3 @@ const alignClass = computed(() => ({
 </script>
 
 <style scoped></style>
-

@@ -16,6 +16,13 @@ const { data } = await useAsyncData('certificates', () =>
 );
 
 const certificates = data.value?.meta.certificates || [];
+
+const templateBindings = {
+  open,
+  certificates,
+};
+
+void templateBindings;
 </script>
 
 <style>

@@ -15,9 +15,11 @@
 </template>
 
 <script setup lang="ts">
+import type { RouteLocationRaw } from 'vue-router'
+
 defineProps<{
   label?: string
-  to?: string | Record<string, any>
+  to?: RouteLocationRaw
   href?: string
   target?: string
   rel?: string
@@ -29,4 +31,3 @@ defineProps<{
 </script>
 
 <style scoped></style>
-

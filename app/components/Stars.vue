@@ -5,6 +5,8 @@ canvas(ref="canvasRef")
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 
+defineOptions({ name: 'StarsCanvas' });
+
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 
 type Star = {
@@ -63,7 +65,6 @@ function resizeCanvas() {
 	stars = createStars(width, height)
 }
 
-let lastTime = 0
 function render(time: number) {
 	const canvas = canvasRef.value
 	if (!canvas || !ctx) return

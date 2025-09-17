@@ -80,42 +80,108 @@ UDrawer.modal-resume(v-model:open="open" description="My Resume" direction="top"
 <script lang="ts" setup>
 const { open } = useUiOverlay('resume')
 
-type CvType = Record<string, any>
-const { data } = await useAsyncData('cv', () => queryCollection('cv').first())
-const cv = computed<CvType>(() => (data.value as any)?.meta || {})
+interface CvContact {
+  website?: string | null
+  linkedin?: string | null
+  email?: string | null
+}
+
+interface CvExperience {
+  company?: string | null
+  role?: string | null
+  start_date?: string | number | null
+  end_date?: string | number | null
+  highlights?: string[]
+}
+
+interface CvProject {
+  name?: string | null
+  description?: string | null
+}
+
+interface CvEducation {
+  program?: string | null
+  institution?: string | null
+  start_year?: number | null
+  end_year?: number | null
+}
+
+interface CvSkills {
+  frontend?: string[]
+  backend?: string[]
+  tools?: string[]
+  languages?: string[]
+}
+
+interface CvData {
+  name?: string | null
+  title?: string | null
+  contact?: CvContact
+  profile?: string | null
+  experience?: CvExperience[]
+  freelance_projects?: CvProject[]
+  education?: CvEducation[]
+  skills?: CvSkills
+  source?: string | null
+}
+
+type CvDocument = { meta?: CvData } | null
+
+const { data } = await useAsyncData<CvDocument>('cv', () => queryCollection('cv').first())
+
+const cv = computed<CvData>(() => data.value?.meta ?? {})
 
 function printCv() {
-  if (process.client) window.print()
+  if (import.meta.client) window.print()
 }
 
 function shortUrl(url: string) {
   try {
     const u = new URL(url)
     return u.hostname.replace(/^www\./, '')
-  } catch { return url }
+  } catch {
+    return url
+  }
 }
 
-function formatRange(start?: string | number | null, end?: string | number | null) {
-  const fmt = (v: any) => {
-    if (!v && v !== 0) return ''
-    if (typeof v === 'number') return String(v)
-    // Expecting YYYY or YYYY-MM
-    const s = String(v)
-    if (/^\d{4}-\d{2}$/.test(s)) {
-      const [y, m] = s.split('-').map(Number)
-      return `${new Date(y as number, m as number - 1, 1).toLocaleString(undefined, { month: 'short' })} ${y}`
+type DateLike = string | number | null | undefined
+
+function formatRange(start?: DateLike, end?: DateLike) {
+  const normalize = (value: DateLike): string => {
+    if (value === null || value === undefined) return ''
+    if (typeof value === 'number') return String(value)
+
+    const numeric = String(value)
+    if (/^\d{4}-\d{2}$/.test(numeric)) {
+      const [year, month] = numeric.split('-').map(Number)
+      const date = new Date(year, (month ?? 1) - 1, 1)
+      return date.toLocaleString(undefined, { month: 'short', year: 'numeric' })
     }
-    if (/^\d{4}$/.test(s)) return s
-    return s
+    if (/^\d{4}$/.test(numeric)) return numeric
+    return numeric
   }
-  const a = fmt(start)
-  const b = end ? fmt(end) : 'Present'
-  return [a, b].filter(Boolean).join(' – ')
+
+  const startLabel = normalize(start)
+  const endLabel = normalize(end) || 'Present'
+  return [startLabel, endLabel].filter(Boolean).join(' – ')
 }
 
 function formatEduYears(start?: number | null, end?: number | null) {
-  return [start, end ?? 'Present'].filter(Boolean).join(' – ')
+  const startLabel = start ?? ''
+  const endLabel = end ?? 'Present'
+  return [startLabel, endLabel].filter(Boolean).join(' – ')
 }
+
+const templateBindings = {
+  open,
+  cv,
+  printCv,
+  shortUrl,
+  formatRange,
+  formatEduYears,
+};
+
+void templateBindings;
 </script>
 
 <style>

@@ -20,7 +20,7 @@
       <slot />
     </div>
 
-    <template #footer  v-if="cta || $slots.actions || to || href">
+    <template v-if="cta || $slots.actions || to || href"  #footer>
       <div class="flex items-center gap-2">
         <UButton v-if="to || href" :to="to" :href="href" variant="soft" color="primary" icon="i-heroicons-arrow-right">
           {{ cta || 'Learn more' }}
@@ -32,13 +32,15 @@
 </template>
 
 <script setup lang="ts">
+import type { RouteLocationRaw } from 'vue-router'
+
 defineProps<{
   title?: string
   subtitle?: string
   description?: string
   badge?: string
   cta?: string
-  to?: string | Record<string, any>
+  to?: RouteLocationRaw
   href?: string
 }>()
 </script>

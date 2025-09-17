@@ -13,15 +13,18 @@
 
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
-  title?: string
-  description?: string
+  title?: string | null
+  description?: string | null
   color?: 'primary' | 'success' | 'warning' | 'error' | 'info' | string
   variant?: 'soft' | 'solid' | 'outline'
-  icon?: string
+  icon?: string | null
   type?: 'info' | 'success' | 'warning' | 'error'
 }>(), {
+  title: null,
+  description: null,
   color: 'primary',
   variant: 'soft',
+  icon: null,
   type: 'info'
 })
 
@@ -36,4 +39,3 @@ const iconName = computed(() => props.icon || iconByType[props.type || 'info'])
 </script>
 
 <style scoped></style>
-

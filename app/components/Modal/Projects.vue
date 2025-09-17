@@ -33,7 +33,6 @@ UDrawer.modal-projects(v-model:open="open" description="Hand-picked case studies
             template(#footer)
               .flex.items-center.justify-between
                 UButton(:to="project.path" icon="i-heroicons-arrow-top-right-on-square" variant="soft" color="primary" @click="closeOverlay") View details
-                UButton(icon="i-heroicons-document-duplicate" variant="ghost" size="xs" @click="copyLink(project)") Copy link
 </template>
 
 <script lang="ts" setup>
@@ -78,13 +77,19 @@ function capitalize(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-function copyLink(project: any) {
-  const url = project?.path || ''
-  if (!url) return
-  if (typeof navigator !== 'undefined' && navigator.clipboard) {
-    navigator.clipboard.writeText(url).catch(() => {})
-  }
-}
+const templateBindings = {
+  open,
+  closeOverlay,
+  tabs,
+  activeTab,
+  filteredProjects,
+  avatarText,
+  capitalize,
+  query,
+  projects,
+};
+
+void templateBindings;
 </script>
 
 <style>
