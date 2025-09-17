@@ -11,9 +11,7 @@ UModal.modal-contact(v-model:open="open" description="Ways to reach me")
         UButton(icon="i-heroicons-envelope" :href="`mailto:${email}`" variant="soft") Email
         UButton(icon="i-heroicons-user-circle" :href="linkedin" target="_blank" rel="noopener" variant="soft") LinkedIn
         UButton(icon="i-heroicons-link" :href="website" target="_blank" rel="noopener" variant="soft") Website
-        UButton(icon="i-heroicons-document-duplicate" variant="ghost" @click="copyEmail") Copy email
 
-      //- Divider replacement (UDivider not available)
       div(class="flex items-center gap-3 my-2")
         div(class="h-px bg-white/10 flex-1")
         span(class="text-xs uppercase tracking-wide text-white/60") Or send a quick note
@@ -56,12 +54,6 @@ const form = reactive({
 
 const canSend = computed(() => form.message.trim().length > 0)
 
-function copyEmail() {
-  if (typeof navigator !== 'undefined' && navigator.clipboard) {
-    navigator.clipboard.writeText(email).catch(() => {})
-  }
-}
-
 function submit() {
   if (!canSend.value) return
   sending.value = true
@@ -84,7 +76,6 @@ const templateBindings = {
   email,
   linkedin,
   website,
-  copyEmail,
   submit,
   sending,
   includeMeta,

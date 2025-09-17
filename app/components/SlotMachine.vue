@@ -14,7 +14,8 @@ type Slot = {
   current: string;
   next: string;
   transitionSpeed: number;
-  transform: string;
+  currentTransform: string;
+  nextTransform: string;
   timeout: ReturnType<typeof setTimeout> | null;
 };
 const slots: Ref<Slot[]> = ref(Array.from({ length }, (_, index) => {
@@ -23,7 +24,8 @@ const slots: Ref<Slot[]> = ref(Array.from({ length }, (_, index) => {
     current: char,
     next: char,
     transitionSpeed: 0,
-    transform: 'translateY(-100%)',
+    currentTransform: 'translateY(0%)',
+    nextTransform: 'translateY(-100%)',
     timeout: null
   };
 }));
@@ -121,13 +123,15 @@ const loop = (slot: Slot, duration = 500, char?: null | string): Promise<void> =
 
   slot.transitionSpeed = safeDuration;
   slot.next = (char ?? randomCharacter()) as string;
-  slot.transform = 'translateY(0)';
+  slot.nextTransform = 'translateY(0%)';
+  slot.currentTransform = 'translateY(100%)';
 
   return new Promise<void>(resolve => {
     const timeout = setTimeout(() => {
       slot.transitionSpeed = 0;
       slot.current = slot.next;
-      slot.transform = 'translateY(-100%)';
+      slot.currentTransform = 'translateY(0%)';
+      slot.nextTransform = 'translateY(-100%)';
       slot.timeout = null;
       timeouts.delete(timeout);
       resolve();
@@ -158,8 +162,8 @@ void templateBindings;
 <template lang="pug">
 ul.slot-machine(@mouseover="handleMouseEnter" @mouseleave="handleMouseLeave")
     li.slot-machine-item(v-for="(slot, i) in slots" :key="i")
-      span(:style="{ transform: slot.transform, transition: `transform ${slot.transitionSpeed}ms cubic-bezier(0.18, 0.89, 0.32, 1.1)` }")  {{ slot.next }}
-      span(:style="{ transform: slot.transform, transition: `transform ${slot.transitionSpeed}ms cubic-bezier(0.18, 0.89, 0.32, 1.1)` }")  {{ slot.current }}
+      span(:style="{ transform: slot.nextTransform, transition: `transform ${slot.transitionSpeed}ms cubic-bezier(0.18, 0.89, 0.32, 1.1)` }")  {{ slot.next }}
+      span(:style="{ transform: slot.currentTransform, transition: `transform ${slot.transitionSpeed}ms cubic-bezier(0.18, 0.89, 0.32, 1.1)` }")  {{ slot.current }}
 </template>
 
 <style scoped>
@@ -183,6 +187,7 @@ ul.slot-machine(@mouseover="handleMouseEnter" @mouseleave="handleMouseLeave")
   background: linear-gradient(var(--color-gray-700) 10%, transparent 30%, transparent 70%, var(--color-gray-700) 100%);
   color: var(--text-gray-200);
   border: solid 1px var(--ui-primary);
+  position: relative;
 }
 
 .slot-machine-item:first-child {
@@ -199,10 +204,23 @@ ul.slot-machine(@mouseover="handleMouseEnter" @mouseleave="handleMouseLeave")
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  transform: translateY(-100%);
+  transform: translateY(0%);
   transition: transform 0ms ease-in-out;
   will-change: transform;
   backface-visibility: hidden;
+  transform-origin: center;
+  position: absolute;
+  inset: 0;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.slot-machine-item span:first-child {
+  z-index: 2;
+}
+
+.slot-machine-item span:last-child {
+  z-index: 1;
 }
 
 .slot-machine.reloading .slot-machine-item span,

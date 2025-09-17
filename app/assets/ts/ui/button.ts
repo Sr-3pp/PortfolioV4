@@ -7,7 +7,7 @@ export default {
     },
     variants: {
         color: {
-            primary: 'rounded-full text-white border border-cyan-400/30 bg-gradient-to-r from-secondary-900 to-secondary-500 text-white shadow-[0_0_18px_rgba(6,182,212,0.2)] hover:shadow-[0_0_24px_rgba(16,185,129,0.45)] active:shadow-[0_0_20px_rgba(16,185,129,0.35)]'
+            primary: 'rounded-full font-bold text-white border border-cyan-400/30 bg-gradient-to-r from-secondary-900 to-secondary-500 text-white shadow-[0_0_18px_rgba(6,182,212,0.2)] hover:shadow-[0_0_24px_rgba(16,185,129,0.45)] active:shadow-[0_0_20px_rgba(16,185,129,0.35)]'
         }
     }
 }
