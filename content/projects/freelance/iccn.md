@@ -1,18 +1,28 @@
 ---
 type: freelance
 title: ICCN
-description: Built a CRM tailored to coaching workflows using Laravel and Vue, enabling coaches to manage clients, sessions, and notes efficiently in one place.
+description: Built a Laravel + Vue CRM with a custom admin workspace so coaches can manage clients, sessions, and notes without juggling spreadsheets.
 technologies: [Laravel, PHP, Vue.js, JavaScript, HTML5, Sass]
+role: Full Stack Developer
+period: 2019 – 2020
+links: [
+  { name: "Website", url: "https://iccn.co", icon: "mdi:web" }
+]
 ---
 
-# ICCN
-
-<Grid cols="1" :md="3" v-if="links && (links.live || links.demo || links.repo)">
-  <Btn v-if="links.live" :href="links.live" target="_blank" icon="i-heroicons-arrow-top-right-on-square" color="primary">Visit Site</Btn>
-  <Btn v-if="links.demo" :href="links.demo" target="_blank" icon="i-heroicons-play" variant="soft">Watch Demo</Btn>
-  <Btn v-if="links.repo" :href="links.repo" target="_blank" icon="i-heroicons-code-bracket" variant="soft">Source</Btn>
+<Grid cols="1" :md="2" :lg="2">
+  <Card title="Overview">
+    Delivered a bespoke CRM for coaching organizations, combining Laravel APIs and a Vue SPA to centralize client records, session history, and progress tracking in one admin hub.
+  </Card>
+  <Card title="Highlights">
+    <ul>
+      <li>Designed a role-based CMS so coaches, admins, and finance teams each have tailored dashboards and permissions.</li>
+      <li>Automated session scheduling, reminders, and note sharing to keep coaches and clients in sync.</li>
+      <li>Rolled up engagement analytics and exports to simplify reporting back to leadership.</li>
+    </ul>
+  </Card>
 </Grid>
 
-<Card title="Overview">
-  Built a CRM tailored for coaching workflows with Laravel and Vue to streamline client management and session tracking.
+<Card title="My Role">
+  Led full-stack delivery: planned the data model, built reusable Vue components, implemented Laravel policies/queues, and deployed the platform on managed hosting.
 </Card>

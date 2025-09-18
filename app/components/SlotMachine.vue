@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { SlotMachineSlot } from '~/types/slot-machine'
+
 const props = defineProps({
   labels: {
     type: Array,
@@ -7,18 +9,10 @@ const props = defineProps({
 });
 
 const defaultLabel = typeof props.labels?.[0] === 'string' ? (props.labels[0] as string) : '';
-const length = Math.max(defaultLabel.length, 0);
+const length = Math.max(defaultLabel.length -1, 0);
 const characters = [" ", "🍕", "🐞", "🍪", "💻", "💀", "🥸", "💩", "🍀", ..."abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?/".split('')];
 
-type Slot = {
-  current: string;
-  next: string;
-  transitionSpeed: number;
-  currentTransform: string;
-  nextTransform: string;
-  timeout: ReturnType<typeof setTimeout> | null;
-};
-const slots: Ref<Slot[]> = ref(Array.from({ length }, (_, index) => {
+const slots: Ref<SlotMachineSlot[]> = ref(Array.from({ length }, (_, index) => {
   const char = Array.from(defaultLabel)[index] ?? ' ';
   return {
     current: char,
@@ -72,7 +66,7 @@ const spin = async () => {
     const activeLabel = props.labels[labelIdx.value] as string | undefined;
     const targetChars = Array.from({ length }, (_, charIndex) => Array.from(activeLabel ?? '')[charIndex] ?? ' ');
 
-    const spinSlot = async (slot: Slot, index: number) => {
+    const spinSlot = async (slot: SlotMachineSlot, index: number) => {
       const totalCycles = 14 + index * 2;
 
       if (index > 0) {
@@ -112,7 +106,7 @@ onBeforeUnmount(() => {
   timeouts.clear();
 });
 
-const loop = (slot: Slot, duration = 500, char?: null | string): Promise<void> => {
+const loop = (slot: SlotMachineSlot, duration = 500, char?: null | string): Promise<void> => {
   const safeDuration = Math.max(duration, 60);
 
   if (slot.timeout) {
@@ -179,7 +173,7 @@ ul.slot-machine(@mouseover="handleMouseEnter" @mouseleave="handleMouseLeave")
   align-items: center;
   font-family: "REM";
   font-weight: bold;
-  font-size: 2rem;
+  font-size: 1.5rem;
   height: 50px;
   width: 40px;
   overflow: hidden;

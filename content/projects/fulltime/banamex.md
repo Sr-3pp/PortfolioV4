@@ -5,19 +5,10 @@ description: Frontend developer contributing to Citibanamex’s digital platform
 role: Frontend Developer
 period: Jul 2018 – Present
 technologies: [Web Components, TypeScript, HTML5, Sass, Accessibility]
-links:
-  live: https://www.banamex.com
+links: [
+  { name: "Website", url: "https://www.banamex.com", icon: "mdi:web" }
+]
 ---
-
-# Banamex
-
-<Figure src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Banamex_logo.svg/2560px-Banamex_logo.svg.png" alt="Banamex logo" caption="Citibanamex logo"></Figure>
-
-<Grid cols="1" :md="3" v-if="links && (links.live || links.demo || links.repo)">
-  <Btn v-if="links.live" :href="links.live" target="_blank" icon="i-heroicons-arrow-top-right-on-square" color="primary">Visit Site</Btn>
-  <Btn v-if="links.demo" :href="links.demo" target="_blank" icon="i-heroicons-play" variant="soft">Watch Demo</Btn>
-  <Btn v-if="links.repo" :href="links.repo" target="_blank" icon="i-heroicons-code-bracket" variant="soft">Source</Btn>
-</Grid>
 
 <Grid :cols="1" :md="2" :lg="2">
   <Card title="Overview">

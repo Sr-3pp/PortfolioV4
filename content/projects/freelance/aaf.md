@@ -1,18 +1,28 @@
 ---
 type: freelance
 title: All American Finishing
-description: Delivered a modern marketing site using Laravel with a Vue/Nuxt frontend, focusing on modular components, a maintainable codebase, and straightforward content updates for the business team.
+description: Delivered a Nuxt-fronted Laravel platform with a custom CMS so the metal finishing team can launch campaigns, case studies, and service updates without waiting on developers.
 technologies: [Laravel, PHP, Vue.js, Nuxt 2, TypeScript, Sass]
+role: Full Stack Developer
+period: 2021 – 2022
+links: [
+  { name: "Website", url: "https://allamericanfinishing.com", icon: "mdi:web" }
+]
 ---
 
-# All American Finishing
-
-<Grid cols="1" :md="3" v-if="links && (links.live || links.demo || links.repo)">
-  <Btn v-if="links.live" :href="links.live" target="_blank" icon="i-heroicons-arrow-top-right-on-square" color="primary">Visit Site</Btn>
-  <Btn v-if="links.demo" :href="links.demo" target="_blank" icon="i-heroicons-play" variant="soft">Watch Demo</Btn>
-  <Btn v-if="links.repo" :href="links.repo" target="_blank" icon="i-heroicons-code-bracket" variant="soft">Source</Btn>
+<Grid cols="1" :md="2" :lg="2">
+  <Card title="Overview">
+    Built a Laravel + Nuxt 2 marketing site with an admin dashboard tailored for industrial services, keeping the brand polished while making day-to-day updates effortless for the in-house team.
+  </Card>
+  <Card title="Highlights">
+    <ul>
+      <li>Implemented a block-based CMS so editors can compose landing pages, testimonials, and photo galleries on the fly.</li>
+      <li>Added reusable quote and RFQ forms that pipe leads to operations via email and CRM webhooks.</li>
+      <li>Optimized Lighthouse performance by pre-rendering key routes and lazy-loading heavy media assets.</li>
+    </ul>
+  </Card>
 </Grid>
 
-<Card title="Overview">
-  Delivered a modern site using Laravel and Vue/Nuxt to present services and streamline content updates for a metal finishing business.
+<Card title="My Role">
+  Owned full-stack delivery: architected the Laravel APIs, built the Nuxt UI component system, wrote TypeScript stores, and handled CI/CD deployments.
 </Card>

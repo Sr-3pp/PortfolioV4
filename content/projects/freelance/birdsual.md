@@ -1,18 +1,28 @@
 ---
 type: freelance
 title: Birdsual
-description: Designed and built a fast, modern portfolio with Nuxt 3 and MongoDB, creating a simple content model so the designer could update work quickly without developer support.
+description: Designed and built a Nuxt 3 portfolio with a custom CMS that lets the designer refresh case studies, visuals, and copy in minutes while keeping performance snappy.
 technologies: [Nuxt 3, Vue 3, TypeScript, Tailwind CSS, MongoDB]
+role: Full Stack Developer
+period: 2023
+links: [
+  { name: "Website", url: "https://birdsual.com", icon: "mdi:web" }
+]
 ---
 
-# Birdsual
-
-<Grid cols="1" :md="3" v-if="links && (links.live || links.demo || links.repo)">
-  <Btn v-if="links.live" :href="links.live" target="_blank" icon="i-heroicons-arrow-top-right-on-square" color="primary">Visit Site</Btn>
-  <Btn v-if="links.demo" :href="links.demo" target="_blank" icon="i-heroicons-play" variant="soft">Watch Demo</Btn>
-  <Btn v-if="links.repo" :href="links.repo" target="_blank" icon="i-heroicons-code-bracket" variant="soft">Source</Btn>
+<Grid cols="1" :md="2" :lg="2">
+  <Card title="Overview">
+    Crafted a Nuxt 3 + MongoDB portfolio with an editor-friendly admin, giving the designer full control over layouts, hero imagery, and copy without touching code.
+  </Card>
+  <Card title="Highlights">
+    <ul>
+      <li>Modeled flexible content blocks so case studies, process timelines, and galleries can be managed entirely from the CMS.</li>
+      <li>Enabled bulk media uploads with automatic resizing and CDN delivery to keep pages lightweight.</li>
+      <li>Tuned the build pipeline and caching strategy to preserve smooth animations and fast navigation.</li>
+    </ul>
+  </Card>
 </Grid>
 
-<Card title="Overview">
-  Designed and built a modern portfolio using Nuxt 3 backed by MongoDB to enable simple content management for a designer.
+<Card title="My Role">
+  Ran the project end to end: UX, Nuxt component library, API design, content modeling, and deployment automation.
 </Card>

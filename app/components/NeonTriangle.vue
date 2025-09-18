@@ -6,13 +6,13 @@ const { x, y } = useMouse();
 const svgRef = ref<SVGSVGElement | null>(null);
 const gradientRef = ref<SVGRadialGradientElement | null>(null);
 
-let targetX = 18.5; // initial center
+let targetX = 18.5;
 let targetY = 16.3;
 let currentX = 18.5;
 let currentY = 16.3;
-const lerpFactor = 0.05; // resistance: lower = more resistance
+const lerpFactor = 0.05;
 
-function animateGradient() {
+const animateGradient = () => {
   const svg = svgRef.value;
   const grad = gradientRef.value;
   if (!svg || !grad) {
@@ -20,10 +20,8 @@ function animateGradient() {
     return;
   }
   const rect = svg.getBoundingClientRect();
-  // Use mouse position relative to SVG
   const relX = ((x.value - rect.left) / rect.width) * 37;
   const relY = ((y.value - rect.top) / rect.height) * 32.6;
-  // Clamp to inner 50% (25% to 75%)
   const minX = 0.25 * 37;
   const maxX = 0.75 * 37;
   const minY = 0.25 * 32.6;
@@ -60,7 +58,6 @@ onMounted(() => {
               stop.portal-stop-4(offset="100%")
           clipPath#triangleClip
               path(d="M4.1,34.1c-0.6,0-1.2-0.3-1.5-0.9c-0.3-0.5-0.3-1.2,0-1.7L18.7,3.6c0.3-0.5,0.9-0.9,1.5-0.9 s1.2,0.3,1.5,0.9l16.1,27.9c0.3,0.5,0.3,1.2,0,1.7c-0.3,0.5-0.9,0.9-1.5,0.9H4.1z")
-      // Gradient background first (behind), then outline
       path.triangle-bg-clip(
           fill="url(#portalGradient)"
           d="M4.1,34.1c-0.6,0-1.2-0.3-1.5-0.9c-0.3-0.5-0.3-1.2,0-1.7L18.7,3.6c0.3-0.5,0.9-0.9,1.5-0.9 s1.2,0.3,1.5,0.9l16.1,27.9c0.3,0.5,0.3,1.2,0,1.7c-0.3,0.5-0.9,0.9-1.5,0.9H4.1z"
@@ -94,18 +91,13 @@ onMounted(() => {
   width: 100%;
   height: auto;
   z-index: 2;
-  pointer-events: none; /* allow interactions through */
+  pointer-events: none;
 }
 
 .neon-triangle .portal-stop-1 { stop-color: var(--ui-primary, #22d3ee); stop-opacity: 0.95; }
 .neon-triangle .portal-stop-2 { stop-color: var(--ui-primary, #22d3ee); stop-opacity: 0.55; }
 .neon-triangle .portal-stop-3 { stop-color: var(--ui-primary, #22d3ee); stop-opacity: 0.25; }
 .neon-triangle .portal-stop-4 { stop-color: var(--ui-primary, #22d3ee); stop-opacity: 0; }
-
-/* CSS-driven portal animation for the gradient fill */
-
-
-
 .neon-triangle .triangle-bg-clip {
   --portal-hue: 0deg;
   --portal-blur: 1.2px;

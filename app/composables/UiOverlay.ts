@@ -1,21 +1,18 @@
 export const useUiOverlay = (key: string) => {
-  
-  const open = useState<boolean>(`overlay:${key}:open`, () => false);
+  const open = useState<boolean>(`overlay:${key}:open`, () => false)
 
-  const openOverlay = () => {
-    open.value = true;
-  };
-  const closeOverlay = () => {
-    open.value = false;
-  };
-  const toggleOverlay = () => {
-    open.value = !open.value;
-  };
+  const setOverlayState = (value: boolean) => {
+    open.value = value
+  }
+
+  const openOverlay = () => setOverlayState(true)
+  const closeOverlay = () => setOverlayState(false)
+  const toggleOverlay = () => setOverlayState(!open.value)
 
   return {
     open,
     openOverlay,
     closeOverlay,
-    toggleOverlay,
+    toggleOverlay
   }
 }

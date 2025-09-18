@@ -43,7 +43,7 @@ section.flex.items-center.justify-center.bg-gradient-to-b.from-gray-900.to-black
     div.w-full.flex.flex-col.items-center.justify-center.gap-6(class="sm:w-1/2")
       h1.transition-opacity.duration-500.text-xl.font-bold(class="sm:text-2xl md:text-4xl" :class="{'hidden': currentPath !== '/'}") Martin Ruiz
 
-      SlotMachine.transition-opacity.duration-500(class="w-full sm:w-2/3" :class="{'!hidden': currentPath !== '/'}" :labels="['Vue Expert', 'Bug Hunter', 'Nuxt Guru🧞‍♂️']")
+      SlotMachine.transition-opacity.duration-500(class="w-full sm:w-2/3" :class="{'!hidden': currentPath !== '/'}" :labels="['💻Vue Expert', '🐞Bug Hunter', '🧞Nuxt Guru']")
       
       ul.flex.gap-5.mx-auto.transition-all.duration-500.flex-wrap.justify-center(:class="{'flex-col items-stretch': currentPath === '/', 'flex-row': currentPath !== '/'}")
         li

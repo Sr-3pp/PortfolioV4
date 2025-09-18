@@ -66,6 +66,12 @@ importers:
       '@types/node':
         specifier: ^24.5.0
         version: 24.5.0
+      nodemailer:
+        specifier: ^7.0.6
+        version: 7.0.6
+      nuxt-nodemailer:
+        specifier: ^1.1.2
+        version: 1.1.2(magicast@0.3.5)(nodemailer@7.0.6)
       pug:
         specifier: ^3.0.3
         version: 3.0.3
@@ -3862,6 +3868,10 @@ packages:
   node-releases@2.0.21:
     resolution: {integrity: sha512-5b0pgg78U3hwXkCM8Z9b2FJdPZlr9Psr9V2gQPESdGHqbntyFJKFW4r5TeWGFzafGY3hzs1JC62VEQMbl1JFkw==}
 
+  nodemailer@7.0.6:
+    resolution: {integrity: sha512-F44uVzgwo49xboqbFgBGkRaiMgtoBrBEWCVincJPK9+S9Adkzt/wXCLKbf7dxucmxfTI5gHGB+bEmdyzN6QKjw==}
+    engines: {node: '>=6.0.0'}
+
   nopt@8.1.0:
     resolution: {integrity: sha512-ieGu42u/Qsa4TFktmaKEwM6MQH0pOWnaB3htzh0JRtx84+Mebc0cbZYN5bC+6WTZ4+77xrL9Pn5m7CV6VIkV7A==}
     engines: {node: ^18.17.0 || >=20.5.0}
@@ -3889,6 +3899,11 @@ packages:
   nuxt-component-meta@0.14.0:
     resolution: {integrity: sha512-RaL6bHJujuZmw/G+uNWAHYktf3k4hdlBIy+FqudXji42IefrJKdSMkh5ixyhsfEHWsuTYGKxD2NU3sq990KGrQ==}
     hasBin: true
+
+  nuxt-nodemailer@1.1.2:
+    resolution: {integrity: sha512-oYi0AnEZu56euRxJ/G7NAQLmRct9ORgKvxF3AcAbVlxfKJJQ7kNPZnlymQbzg9F/SLBlQgSE+mSQR/3Wz6JOIg==}
+    peerDependencies:
+      nodemailer: ^6.9.13
 
   nuxt@4.1.2:
     resolution: {integrity: sha512-g5mwszCZT4ZeGJm83nxoZvtvZoAEaY65VDdn7p7UgznePbRaEJJ1KS1OIld4FPVkoDZ8TEVuDNqI9gUn12Exvg==}
@@ -9937,6 +9952,8 @@ snapshots:
 
   node-releases@2.0.21: {}
 
+  nodemailer@7.0.6: {}
+
   nopt@8.1.0:
     dependencies:
       abbrev: 3.0.1
@@ -9969,6 +9986,13 @@ snapshots:
       typescript: 5.9.2
       ufo: 1.6.1
       vue-component-meta: 3.0.7(typescript@5.9.2)
+    transitivePeerDependencies:
+      - magicast
+
+  nuxt-nodemailer@1.1.2(magicast@0.3.5)(nodemailer@7.0.6):
+    dependencies:
+      '@nuxt/kit': 3.19.2(magicast@0.3.5)
+      nodemailer: 7.0.6
     transitivePeerDependencies:
       - magicast
 
