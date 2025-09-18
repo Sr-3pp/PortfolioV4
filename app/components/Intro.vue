@@ -27,7 +27,7 @@ void templateBindings;
 </script>
 
 <template lang="pug">
-section.flex.items-center.justify-center.bg-gradient-to-b.from-gray-900.to-black.text-white.overflow-hidden.transition-all.duration-500.ease-out.z-20(:class="{'h-screen': currentPath === '/', 'h-20 sticky w-full top-0 left-0': currentPath !== '/'}")
+section.flex.items-center.justify-center.bg-gradient-to-b.from-gray-900.to-black.text-white.overflow-hidden.transition-all.duration-500.ease-out.z-20(:class="{'h-screen': currentPath === '/', 'h-30 sticky w-full top-0 left-0': currentPath !== '/'}")
   UContainer.flex(class="sm:flex-row" :class="{'flex-col': currentPath === '/'}")
     div.w-full(class="sm:w-1/2")
       NuxtLink.relative.transition-all.duration-500.ease-out.flex(to="/" :class="{'sm:-bottom-10': currentPath !== '/'}")

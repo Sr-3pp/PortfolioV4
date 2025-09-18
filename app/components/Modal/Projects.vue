@@ -23,7 +23,7 @@ UDrawer.modal-projects(v-model:open="open" description="Hand-picked case studies
                 UBadge(size="xs" variant="subtle") {{ projectTypeLabels[activeTab] }}
 
             template(#default)
-              p.text-sm.text-gray-500 {{ project.description }}
+              p.text-sm.text-gray-500(v-if="project.description" v-html="project.description")
               ul.flex.flex-wrap.gap-2.mt-4
                 li(v-for="(tech, tIdx) in project.meta.technologies" :key="tIdx")
                   UBadge(variant="soft" color="secondary" size="xs") {{ tech }}

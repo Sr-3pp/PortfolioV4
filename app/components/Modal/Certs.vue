@@ -12,7 +12,7 @@ UModal.modal-certificates(v-model:open="open" description="My credentials")
           template(#default)
             .flex.items-center.gap-4
               NuxtImg(v-if="cert.thumbnail" :src="cert.thumbnail" :alt="cert.name" width="300" height="300" class="w-full rounded-md object-cover shadow-sm")
-            p(v-if="cert.summary" class="text-sm text-white/70") {{ cert.summary }}
+            p(v-if="cert.summary" class="text-sm text-white/70" v-html="cert.summary")
           template(#footer)
             UButton(:href="cert.link" target="_blank" rel="noopener" icon="i-heroicons-arrow-top-right-on-square" variant="soft" :disabled="!cert.link") View credential
 

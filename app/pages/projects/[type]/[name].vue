@@ -7,7 +7,7 @@ section
           div(class="flex flex-col md:flex-row md:items-start justify-between gap-3 md:gap-4")
             div(class="space-y-1 flex-1")
               h1(class="text-2xl font-semibold") {{ project.title }}
-              p(v-if="project.description" class="text-white/70") {{ project.description }}
+              p(v-if="project.description" class="text-white/70" v-html="project.description")
             UBadge(variant="subtle") {{ project?.meta?.type || 'project' }}
 
         template(#default)

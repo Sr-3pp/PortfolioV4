@@ -20,7 +20,7 @@ UDrawer.modal-resume(v-model:open="open" description="My Resume" direction="top"
 
       section.mb-6(v-if="cv.profile")
         h2.text-lg.font-semibold.mb-2 Profile
-        p.text-sm.leading-relaxed.text-gray-700 {{ cv.profile }}
+        p.text-sm.leading-relaxed.text-gray-700(v-html="cv.profile")
 
       section.mb-6(v-if="cv.experience?.length")
         h2.text-lg.font-semibold.mb-3 Experience
@@ -32,7 +32,7 @@ UDrawer.modal-resume(v-model:open="open" description="My Resume" direction="top"
                 p.text-sm.text-gray-600 {{ job.company }}
               p.text-xs.text-gray-500.whitespace-nowrap {{ formatRange(job.start_date, job.end_date) }}
             ul.list-disc.list-inside.text-sm.text-gray-700.mt-2
-              li(v-for="(h, hIdx) in job.highlights" :key="hIdx") {{ h }}
+              li(v-for="(h, hIdx) in job.highlights" :key="hIdx" v-html="h")
 
       section.mb-6(v-if="cv.freelance_projects?.length")
         h2.text-lg.font-semibold.mb-2 Freelance Projects
@@ -40,7 +40,7 @@ UDrawer.modal-resume(v-model:open="open" description="My Resume" direction="top"
           li(v-for="(fp, fIdx) in cv.freelance_projects" :key="fIdx")
             p.text-sm
               span.font-medium {{ fp.name }}:
-              span.text-gray-700  {{ ' ' + fp.description }}
+              span.text-gray-700.ml-1(v-if="fp.description" v-html="fp.description")
             UButton.mt-1(v-if="fp.link" :href="fp.link" target="_blank" rel="noopener" size="xs" variant="soft" icon="i-heroicons-arrow-top-right-on-square") View project
 
       section.mb-6(v-if="cv.education?.length")

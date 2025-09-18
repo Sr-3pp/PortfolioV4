@@ -48,7 +48,7 @@ section
 
     UCard(v-if="cta")
       template(#header) {{ cta.title }}
-      p.mt-1(class="text-white/70") {{ cta.description }}
+      p.mt-1(class="text-white/70" v-html="cta.description")
       template(#footer)
         UButton(icon="i-heroicons-rectangle-stack" @click="openProjects()") {{ cta.buttonLabel }}
 </template>

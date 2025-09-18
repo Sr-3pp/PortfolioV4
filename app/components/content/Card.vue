@@ -2,14 +2,14 @@
 UCard(:ui="{ body: 'h-full' }")
   template(#header)
     h3.text-base.font-semibold(v-if="title") {{ title }}
-    p.text-sm.text-white/60(v-if="subtitle") {{ subtitle }}
+    p(v-if="subtitle" class="text-sm text-white/60" v-html="subtitle")
     template(v-if="badge")
       div(class="flex items-center justify-between")
         span(class="text-sm font-medium") {{ title }}
         UBadge(color="primary" variant="soft") {{ badge }}
-      p(v-if="subtitle" class="mt-1 text-sm text-white/60") {{ subtitle }}
+      p(v-if="subtitle" class="mt-1 text-sm text-white/60" v-html="subtitle")
 
-  p(v-if="description" class="mt-3 text-white/70") {{ description }}
+  p(v-if="description" class="mt-3 text-white/70" v-html="description")
   div(v-if="$slots.default" class="mt-3")
     slot
 
