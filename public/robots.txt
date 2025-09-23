@@ -1,2 +1,4 @@
 User-Agent: *
 Disallow:
+
+Sitemap: https://sr3pp.dev/sitemap.xml

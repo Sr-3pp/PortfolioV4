@@ -1,39 +1,59 @@
-import type { ProjectType } from "~/types/Project";
+import type { ParsedContent } from '@nuxt/content/dist/runtime/types'
+import type { ProjectType } from '~/types/project'
+
+const projectTypes: ProjectType[] = ['fulltime', 'contractor', 'freelance']
+
+const createBuckets = (): Record<ProjectType, ParsedContent[]> => ({
+  fulltime: [],
+  contractor: [],
+  freelance: []
+})
+
+const resolveProjectType = (rawType: unknown): ProjectType => {
+  const normalized = String(rawType || '').toLowerCase() as ProjectType
+  return projectTypes.includes(normalized) ? normalized : 'freelance'
+}
+
+const sortProjects = (entries: ParsedContent[]) =>
+  entries.sort((left, right) => String(left.title ?? '').localeCompare(String(right.title ?? '')))
+
+const createProjectKey = (type: string, slug: string) => `project-${type}-${slug}`
 
 export const useProjects = () => {
   const getProjects = async () => {
-    const { data } = await useAsyncData('projects', () =>
+    const { data } = await useAsyncData<ParsedContent[] | null>('projects', () =>
       queryCollection('content').where('path', 'LIKE', '%projects%').all()
     )
 
-    const projects: Record<ProjectType, any[]> = reactive({
-      fulltime: [],
-      contractor: [],
-      freelance: []
-    })
+    const buckets = createBuckets()
 
-    // Group by type and keep a stable order by title
-    data.value?.forEach((item: any) => {
-      const { type }: { type: ProjectType } = item.meta || { type: 'freelance' }
-      projects[type].push(item)
-    })
-    ;(['fulltime', 'contractor', 'freelance'] as ProjectType[]).forEach((t) => {
-      projects[t].sort((a, b) => a.title.localeCompare(b.title))
-    })
+    for (const item of data.value ?? []) {
+      const type = resolveProjectType(item.meta?.type)
+      buckets[type].push(item)
+    }
 
-    return projects
+    projectTypes.forEach((type) => sortProjects(buckets[type]))
+
+    return buckets
   }
 
   const getProjectBySlug = async (type: string, slug: string) => {
-    // Provide a unique key per project to avoid stale cache reuse
-    const { data } = await useAsyncData(
-      `project-${type}-${slug}`,
+    const normalizedType = type.trim()
+    const normalizedSlug = slug.trim()
+
+    if (!normalizedType || !normalizedSlug) {
+      return null
+    }
+
+    const { data } = await useAsyncData<ParsedContent | null>(
+      createProjectKey(normalizedType, normalizedSlug),
       () =>
         queryCollection('content')
-          .where('path', 'LIKE', `%projects/${type}/${slug}%`)
+          .where('path', 'LIKE', `%projects/${normalizedType}/${normalizedSlug}%`)
           .first()
     )
-    return data.value
+
+    return data.value ?? null
   }
 
   return {

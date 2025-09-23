@@ -4,17 +4,11 @@ canvas(ref="canvasRef")
 
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import type { Star } from '~/types/stars'
+
+defineOptions({ name: 'StarsCanvas' });
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
-
-type Star = {
-	x: number
-	y: number
-	size: number
-	baseAlpha: number
-	color: string
-	twinkleSpeed: number
-}
 
 let ctx: CanvasRenderingContext2D | null = null
 let animationId = 0
@@ -23,29 +17,27 @@ let dpr = 1
 
 const neonColors = ['#00ffff', '#ff00ff', '#00ff99', '#ffdd00', '#ff0066', '#66f', '#0ff']
 
-function rand(min: number, max: number) {
-	return Math.random() * (max - min) + min
-}
+const rand = (min: number, max: number) => Math.random() * (max - min) + min
 
-function createStars(width: number, height: number) {
+const createStars = (width: number, height: number) => {
 	const area = width * height
-	const count = Math.max(80, Math.floor(area / 20000)) // density-based count
-	const arr: Star[] = []
-	for (let i = 0; i < count; i++) {
-		arr.push({
+	const count = Math.max(80, Math.floor(area / 20000))
+	const result: Star[] = []
+	for (let index = 0; index < count; index += 1) {
+		const colorIndex = Math.floor(Math.random() * neonColors.length)
+		result.push({
 			x: Math.random() * width,
 			y: Math.random() * height,
 			size: rand(0.6, 3.5),
 			baseAlpha: rand(0.4, 1),
-			color: neonColors[Math.floor(Math.random() * neonColors.length)] as string || neonColors[0] as string,
-			// slower twinkling for a relaxed neon glow
+			color: neonColors[colorIndex] ?? neonColors[0]!,
 			twinkleSpeed: rand(0.0006, 0.0025),
 		})
 	}
-	return arr
+	return result
 }
 
-function resizeCanvas() {
+const resizeCanvas = () => {
 	const canvas = canvasRef.value
 	if (!canvas || !ctx) return
 
@@ -53,60 +45,66 @@ function resizeCanvas() {
 	const height = window.innerHeight
 	dpr = Math.max(1, window.devicePixelRatio || 1)
 
-	canvas.style.width = width + 'px'
-	canvas.style.height = height + 'px'
+	canvas.style.width = `${width}px`
+	canvas.style.height = `${height}px`
 
 	canvas.width = Math.floor(width * dpr)
 	canvas.height = Math.floor(height * dpr)
-	ctx.setTransform(dpr, 0, 0, dpr, 0, 0) // scale back to CSS pixels
+	ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
 	stars = createStars(width, height)
 }
 
-let lastTime = 0
-function render(time: number) {
+const render = (time: number) => {
 	const canvas = canvasRef.value
 	if (!canvas || !ctx) return
 	const width = canvas.width / dpr
 	const height = canvas.height / dpr
 
-	// clear with transparent black to preserve layering
 	ctx.clearRect(0, 0, width, height)
 
-	// subtle background vignette (optional) - commented out; can enable if wanted
-	// drawBackground(ctx, width, height)
-
-	for (const s of stars) {
-		// twinkle
-		const t = time * s.twinkleSpeed
-		const alpha = s.baseAlpha * (0.7 + 0.3 * Math.sin(t + s.x + s.y))
+	for (const star of stars) {
+		const twinkle = time * star.twinkleSpeed
+		const alpha = star.baseAlpha * (0.7 + 0.3 * Math.sin(twinkle + star.x + star.y))
 
 		ctx.save()
 		ctx.globalCompositeOperation = 'lighter'
-		ctx.fillStyle = s.color
+		ctx.fillStyle = star.color
 		ctx.globalAlpha = alpha
 
-		// glow
-		ctx.shadowBlur = s.size * 8
-		ctx.shadowColor = s.color
-
-		// draw a small radial glow using arc
+		ctx.shadowBlur = star.size * 8
+		ctx.shadowColor = star.color
 		ctx.beginPath()
-		ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2)
+		ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2)
 		ctx.fill()
 
-		// small bright core
 		ctx.shadowBlur = 0
 		ctx.globalAlpha = Math.min(1, alpha * 1.5)
 		ctx.fillStyle = '#fff'
 		ctx.beginPath()
-		ctx.arc(s.x, s.y, Math.max(0.3, s.size * 0.35), 0, Math.PI * 2)
+		ctx.arc(star.x, star.y, Math.max(0.3, star.size * 0.35), 0, Math.PI * 2)
 		ctx.fill()
-
 		ctx.restore()
 	}
 
 	animationId = requestAnimationFrame(render)
+}
+
+const stopAnimation = () => {
+	if (animationId) cancelAnimationFrame(animationId)
+	animationId = 0
+}
+
+const startAnimation = () => {
+	if (!animationId) animationId = requestAnimationFrame(render)
+}
+
+const handleVisibilityChange = () => {
+	if (document.hidden) {
+		stopAnimation()
+	} else {
+		startAnimation()
+	}
 }
 
 onMounted(() => {
@@ -116,28 +114,15 @@ onMounted(() => {
 	if (!ctx) return
 
 	resizeCanvas()
-
 	window.addEventListener('resize', resizeCanvas)
+	document.addEventListener('visibilitychange', handleVisibilityChange)
+	startAnimation()
+})
 
-	// pause animation when tab is hidden to save CPU
-	function onVisibilityChange() {
-		if (document.hidden) {
-			if (animationId) cancelAnimationFrame(animationId)
-			animationId = 0
-		} else if (!animationId) {
-			animationId = requestAnimationFrame(render)
-		}
-	}
-	document.addEventListener('visibilitychange', onVisibilityChange)
-
-	// start
-	animationId = requestAnimationFrame(render)
-
-	onUnmounted(() => {
-		if (animationId) cancelAnimationFrame(animationId)
-		window.removeEventListener('resize', resizeCanvas)
-		document.removeEventListener('visibilitychange', onVisibilityChange)
-	})
+onUnmounted(() => {
+	stopAnimation()
+	window.removeEventListener('resize', resizeCanvas)
+	document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 
 </script>
@@ -145,11 +130,11 @@ onMounted(() => {
 <style scoped>
 canvas {
 	position: fixed;
-	inset: 0; /* top:0 right:0 bottom:0 left:0 */
+	inset: 0;
 	width: 100%;
 	height: 100%;
 	display: block;
-	pointer-events: none; /* allow interactions through canvas */
+	pointer-events: none;
 	z-index: 22;
 	background: transparent;
   filter: blur(5px);

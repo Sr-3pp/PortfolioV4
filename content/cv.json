@@ -7,17 +7,17 @@
     "linkedin": "https://linkedin.com/in/sr3pp",
     "email": "martin.ru@outlook.com"
   },
-  "profile": "Frontend-focused full stack developer with 10+ years of experience. Certified Senior Vue Developer, with deep expertise in Vue, Nuxt, and modern web tooling. Known for building modular, scalable, and performant applications across diverse industries like banking, travel, and e-commerce.",
+  "profile": "Frontend-focused full stack developer with 10+ years of experience. Certified Senior Vue Developer with deep expertise in Vue, Nuxt, and modern web tooling. Known for building modular, scalable, and performant applications across banking, travel, and e-commerce products.",
   "experience": [
     {
       "company": "Exclusive Resorts",
-      "role": "Frontend Developer",
+      "role": "Frontend Developer (Contract)",
       "start_date": "2024-03",
       "end_date": null,
       "highlights": [
-        "Maintained and optimized the Nuxt 3 public site.",
-        "Migrated to Prismic Slice Machine.",
-        "Handled Salesforce content management and integrations."
+        "Own day-to-day upkeep of the Nuxt 3 marketing site, quickly resolving regressions before they ship.",
+        "Rolled out Prismic Slice Machine so content and marketing teams can publish modular slices without engineering handoffs.",
+        "Coordinated with Salesforce stakeholders to keep CRM-driven content in sync across environments."
       ]
     },
     {
@@ -26,9 +26,9 @@
       "start_date": "2023-01",
       "end_date": "2024-02",
       "highlights": [
-        "Built and maintained web components using Lit and PHP.",
-        "Improved UI/UX and frontend performance.",
-        "Collaborated with engineering teams on QA and maintainability."
+        "Developed and maintained Lit-based web components consumed by PHP-powered surfaces across the platform.",
+        "Profiled and tuned UI performance so inventory and admin experiences stayed fast at scale.",
+        "Partnered with QA and backend teams to uphold accessibility and maintainable release processes."
       ]
     },
     {
@@ -37,8 +37,9 @@
       "start_date": "2022-06",
       "end_date": "2023-01",
       "highlights": [
-        "Developed responsive React interfaces for Prism application.",
-        "Customized themes and ensured accessibility."
+        "Shipped React frontends for the Prism product, backed by a GraphQL API and modular design system.",
+        "Customized branding and themes for enterprise clients while keeping experiences accessible.",
+        "Documented component usage and supported internal teams with adoption and rollout."
       ]
     },
     {
@@ -47,64 +48,81 @@
       "start_date": "2018-07",
       "end_date": null,
       "highlights": [
-        "Led frontend migration to web components.",
-        "Ensured accessibility and responsive design.",
-        "Optimized site performance and frontend workflow."
+        "Led the build of a reusable Web Components system in TypeScript for flagship banking journeys.",
+        "Embedded accessibility and responsiveness standards across public and private experiences.",
+        "Monitored performance metrics and introduced tooling to keep customer flows fast and reliable."
       ]
     },
     {
       "company": "Pengo",
       "role": "Magento Developer",
-      "start_date": "2017",
-      "end_date": "2018",
+      "start_date": "2017-01",
+      "end_date": "2018-12",
       "highlights": [
-        "Created custom Magento modules and themes.",
-        "Integrated third-party services and optimized performance."
+        "Implemented and maintained Magento modules powering day-to-day e-commerce operations.",
+        "Integrated supplier services and payment providers while safeguarding storefront performance.",
+        "Collaborated with merchandising teams to translate business requirements into storefront features."
       ]
     },
     {
       "company": "Queremos Comer",
       "role": "Webmaster",
-      "start_date": "2016",
-      "end_date": "2017",
+      "start_date": "2016-01",
+      "end_date": "2017-12",
       "highlights": [
-        "Maintained and updated websites with relevant, appealing content.",
-        "Handled technical operations, ensured security and performance.",
-        "Used analytics to improve UX and engagement."
+        "Managed restaurant sites end-to-end, keeping content fresh, responsive, and SEO friendly.",
+        "Resolved production issues and hardened infrastructure against common security threats.",
+        "Used analytics to target UX tweaks that improved customer engagement and conversions."
       ]
     },
     {
       "company": "Kaloni",
       "role": "Webmaster Jr.",
-      "start_date": "2015",
-      "end_date": "2016",
+      "start_date": "2015-01",
+      "end_date": "2016-12",
       "highlights": [
-        "Maintained and updated corporate websites.",
-        "Assisted with technical fixes and site enhancements.",
-        "Ensured consistent uptime and content accuracy."
+        "Maintained corporate web properties and coordinated scheduled content refreshes.",
+        "Created email templates and microsites with Adobe Muse, HTML, and CSS.",
+        "Partnered with regional teams to ensure availability and consistency across markets."
+      ]
+    },
+    {
+      "company": "Kokoro",
+      "role": "Graphic Designer",
+      "start_date": "2014-01",
+      "end_date": "2015-01",
+      "highlights": [
+        "Produced marketing collateral—flyers, posters, and social media graphics—for product launches.",
+        "Collaborated with marketing stakeholders to align messaging and brand standards across campaigns.",
+        "Delivered 3D exhibition assets and animations for trade show activations."
       ]
     }
   ],
   "freelance_projects": [
     {
-      "name": "Birdsual",
-      "description": "Nuxt 3 + Mongo portfolio site for a designer."
-    },
-    {
-      "name": "Quivi",
-      "description": "E-commerce for autoparts built with Nuxt 2 and Django REST; later rebuilt entirely with Nuxt."
-    },
-    {
-      "name": "All American Cabinetry",
-      "description": "Nuxt 2 + Mongo catalog."
-    },
-    {
       "name": "ICCN",
-      "description": "Laravel + Vue CRM for coaches."
+      "description": "Built a Laravel + Vue CRM for a coaching network with secure onboarding, granular permissions, and a self-service admin panel.",
+      "link": "https://members.internationalccn.org"
     },
     {
       "name": "All American Finishing",
-      "description": "Laravel + Vue site for metal finishing."
+      "description": "Delivered a metal-finishing marketing site with Laravel and Vue, then led the Nuxt-based redesign currently in validation.",
+      "link": "https://allamericanfinishing.com"
+    },
+    {
+      "name": "All American Cabinetery",
+      "description": "Created a Nuxt + TypeScript catalog experience for a Las Vegas cabinetry studio, pairing custom CMS tooling with a polished UX.",
+      "link": "https://allamericancabinetery.com"
+    },
+    {
+      "name": "Quivi",
+      "description": "Launched and later rebuilt an autoparts e-commerce platform—first with Django REST + Nuxt, then as a full Nuxt implementation.",
+      "link": "https://quivi.com"
+    },
+    {
+      "name": "Birdsual",
+      "description": "Shipped a Nuxt 3 + Mongo portfolio for a graphic designer, balancing visual storytelling with a maintainable CMS layer.",
+      "link": "https://birdsualdesign.com"
     }
   ],
   "education": [

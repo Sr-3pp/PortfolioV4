@@ -6,9 +6,7 @@ UDrawer.modal-resume(v-model:open="open" description="My Resume" direction="top"
       UButton(icon="i-heroicons-printer" size="sm" variant="soft" color="primary" @click="printCv") Print
 
   template(#body)
-    //- Printable CV content
     section.cv-print.mx-auto.max-w-3xl.bg-white.text-gray-900.rounded-md.shadow-sm.p-6
-      // Header
       header.border-b.pb-4.mb-6
         h1.text-2xl.font-bold.leading-tight {{ cv.name }}
         p.text-sm.text-gray-600 {{ cv.title }}
@@ -20,12 +18,10 @@ UDrawer.modal-resume(v-model:open="open" description="My Resume" direction="top"
           li(v-if="cv.contact?.email")
             a(:href="`mailto:${cv.contact.email}`" class="hover:underline") {{ cv.contact.email }}
 
-      // Profile
       section.mb-6(v-if="cv.profile")
         h2.text-lg.font-semibold.mb-2 Profile
-        p.text-sm.leading-relaxed.text-gray-700 {{ cv.profile }}
+        p.text-sm.leading-relaxed.text-gray-700(v-html="cv.profile")
 
-      // Experience
       section.mb-6(v-if="cv.experience?.length")
         h2.text-lg.font-semibold.mb-3 Experience
         ul.space-y-4
@@ -36,18 +32,17 @@ UDrawer.modal-resume(v-model:open="open" description="My Resume" direction="top"
                 p.text-sm.text-gray-600 {{ job.company }}
               p.text-xs.text-gray-500.whitespace-nowrap {{ formatRange(job.start_date, job.end_date) }}
             ul.list-disc.list-inside.text-sm.text-gray-700.mt-2
-              li(v-for="(h, hIdx) in job.highlights" :key="hIdx") {{ h }}
+              li(v-for="(h, hIdx) in job.highlights" :key="hIdx" v-html="h")
 
-      // Freelance Projects
       section.mb-6(v-if="cv.freelance_projects?.length")
         h2.text-lg.font-semibold.mb-2 Freelance Projects
         ul.space-y-2
           li(v-for="(fp, fIdx) in cv.freelance_projects" :key="fIdx")
             p.text-sm
               span.font-medium {{ fp.name }}:
-              span.text-gray-700  {{ ' ' + fp.description }}
+              span.text-gray-700.ml-1(v-if="fp.description" v-html="fp.description")
+            UButton.mt-1(v-if="fp.link" :href="fp.link" target="_blank" rel="noopener" size="xs" variant="soft" icon="i-heroicons-arrow-top-right-on-square") View project
 
-      // Education
       section.mb-6(v-if="cv.education?.length")
         h2.text-lg.font-semibold.mb-2 Education
         ul.space-y-2
@@ -58,7 +53,6 @@ UDrawer.modal-resume(v-model:open="open" description="My Resume" direction="top"
                 span.text-gray-600(v-if="ed.institution")  · {{ ed.institution }}
               p.text-xs.text-gray-500 {{ formatEduYears(ed.start_year, ed.end_year) }}
 
-      // Skills
       section(v-if="cv.skills")
         h2.text-lg.font-semibold.mb-2 Skills
         div(class="grid grid-cols-1 sm:grid-cols-3 gap-4")
@@ -80,62 +74,83 @@ UDrawer.modal-resume(v-model:open="open" description="My Resume" direction="top"
 </template>
 
 <script lang="ts" setup>
+import type { CvData, CvDocument, DateLike } from '~/types/cv'
+
 const { open } = useUiOverlay('resume')
 
-type CvType = Record<string, any>
-const { data } = await useAsyncData('cv', () => queryCollection('cv').first())
-const cv = computed<CvType>(() => (data.value as any)?.meta || {})
+const { data } = await useAsyncData<CvDocument>('cv', () => queryCollection('cv').first())
 
-function printCv() {
-  if (process.client) window.print()
+const cv = computed<CvData>(() => data.value?.meta ?? {})
+
+const printCv = () => {
+  if (import.meta.client) window.print()
 }
 
-function shortUrl(url: string) {
+const shortUrl = (url: string) => {
   try {
-    const u = new URL(url)
-    return u.hostname.replace(/^www\./, '')
-  } catch { return url }
-}
-
-function formatRange(start?: string | number | null, end?: string | number | null) {
-  const fmt = (v: any) => {
-    if (!v && v !== 0) return ''
-    if (typeof v === 'number') return String(v)
-    // Expecting YYYY or YYYY-MM
-    const s = String(v)
-    if (/^\d{4}-\d{2}$/.test(s)) {
-      const [y, m] = s.split('-').map(Number)
-      return `${new Date(y as number, m as number - 1, 1).toLocaleString(undefined, { month: 'short' })} ${y}`
-    }
-    if (/^\d{4}$/.test(s)) return s
-    return s
+    const parsed = new URL(url)
+    return parsed.hostname.replace(/^www\./, '')
+  } catch {
+    return url
   }
-  const a = fmt(start)
-  const b = end ? fmt(end) : 'Present'
-  return [a, b].filter(Boolean).join(' – ')
 }
 
-function formatEduYears(start?: number | null, end?: number | null) {
-  return [start, end ?? 'Present'].filter(Boolean).join(' – ')
+const normalizeRangeValue = (value: DateLike): string => {
+  if (value === null || value === undefined) return ''
+  if (typeof value === 'number') return String(value)
+
+  const numeric = String(value)
+  if (/^\d{4}-\d{2}$/.test(numeric)) {
+    const [year, month] = numeric.split('-').map(Number)
+    const date = new Date(year as number, (month ?? 1) - 1, 1)
+    return date.toLocaleString(undefined, { month: 'short', year: 'numeric' })
+  }
+  if (/^\d{4}$/.test(numeric)) return numeric
+  return numeric
 }
+
+const formatRange = (start?: DateLike, end?: DateLike) => {
+  const startLabel = normalizeRangeValue(start)
+  const endLabel = normalizeRangeValue(end) || 'Present'
+  return [startLabel, endLabel].filter(Boolean).join(' – ')
+}
+
+const formatEduYears = (start?: number | null, end?: number | null) => {
+  const startLabel = start ?? ''
+  const endLabel = end ?? 'Present'
+  return [startLabel, endLabel].filter(Boolean).join(' – ')
+}
+
+const templateBindings = {
+  open,
+  cv,
+  printCv,
+  shortUrl,
+  formatRange,
+  formatEduYears,
+};
+
+void templateBindings;
 </script>
 
 <style>
-/* Print only the CV content while keeping required ancestors visible */
 @media print {
-  /* Hide everything by default */
-  body * { visibility: hidden !important; }
+  body * { visibility: hidden !important; overflow: visible !important; height: auto !important; transform: inherit !important;}
 
-  /* Show CV block and its children */
+  body #__nuxt {
+    position: absolute !important;
+  }
+
+  body [data-vaul-drawer]{
+    position: static !important;
+  }
+
   .cv-print, .cv-print * { visibility: visible !important; }
 
-  /* Ensure all ancestors of the CV are visible (drawer portals, wrappers, etc.) */
   html:has(.cv-print), body:has(.cv-print), body *:has(.cv-print) { visibility: visible !important; }
 
-  /* Clean layout for the printed block */
-  .cv-print { position: static !important; inset: auto !important; box-shadow: none !important; background: white !important; }
+  .cv-print { position: static !important; inset: auto !important; box-shadow: none !important; background: white !important;}
 
-  /* Page margins */
-  @page { margin: 12mm; }
+  @page { margin: 6mm; }
 }
 </style>
