@@ -1,5 +1,6 @@
 <template>
   <main>
+	<Analytics />
     <NuxtRouteAnnouncer />
     <Intro />
     <div class="flex flex-col gap-8 sm:gap-12">
@@ -14,4 +15,6 @@
 </template>
 
 <script setup lang="ts">
+	import { Analytics } from '@vercel/analytics/nuxt';
 </script>
+
