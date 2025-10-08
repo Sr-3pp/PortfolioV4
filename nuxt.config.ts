@@ -17,8 +17,9 @@ export default defineNuxtConfig({
         'Senior Vue & Nuxt engineer delivering fast, accessible web experiences for startups and enterprise teams.',
       siteImage: '/img/3pp.webp',
       twitterHandle: '@sr3pp',
-      contactMail: process.env.NUXT_CONTACT_MAIL
-    }
+      contactMail: process.env.NUXT_CONTACT_MAIL,
+    },
+    mongodbUri: process.env.NUXT_MONGO_URI
   },
   app: {
     head: {
