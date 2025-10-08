@@ -35,9 +35,10 @@
     "onlyBuiltDependencies": [
       "@parcel/watcher",
       "@tailwindcss/oxide",
+      "@vercel/speed-insights",
+      "better-sqlite3",
       "esbuild",
       "sharp",
-      "better-sqlite3",
       "unrs-resolver",
       "vue-demi"
     ]
