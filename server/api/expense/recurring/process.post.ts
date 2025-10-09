@@ -1,5 +1,6 @@
 import Recurring from '~/database/Models/RecurringExpense'
 import Expense from '~/database/Models/Expense'
+import { connectToDatabase } from '~/database/index'
 
 /**
  * Utilities to advance dates while keeping Day-Of-Month where possible.
@@ -40,7 +41,7 @@ export default defineEventHandler(async (event) => {
   // if (auth !== `Bearer ${useRuntimeConfig().cronToken}`) {
   //   throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   // }
-
+	await connectToDatabase() 
   const now = new Date()
 
   // Find all active, due recurrences (no duplicate $or keys!)

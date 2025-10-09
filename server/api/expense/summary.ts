@@ -1,5 +1,6 @@
 import Expense from '~/database/Models/Expense'
 import RecurringExpense from '~/database/Models/RecurringExpense'
+import { connectToDatabase } from '~/database/index'
 
 export default defineEventHandler(async (event) => {
   const q = getQuery(event)
@@ -22,6 +23,8 @@ export default defineEventHandler(async (event) => {
   // UTC month window: [start, nextStart)
   const monthStartUTC     = new Date(Date.UTC(year, month0, 1))
   const nextMonthStartUTC = new Date(Date.UTC(year, month0 + 1, 1))
+	
+  await connectToDatabase()
 
   // --- EXPENSES: total for the month ---
   const [expenseAgg] = await Expense.aggregate([

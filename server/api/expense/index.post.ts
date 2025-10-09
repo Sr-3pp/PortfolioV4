@@ -1,7 +1,10 @@
 import Expense from '~/database/Models/Expense'
+import { connectToDatabase } from '~/database/index'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
+
+  await connectToDatabase()
 
   if (!body || typeof body.amount !== 'number' || !body.category || !body.method) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })

@@ -1,4 +1,5 @@
 import Recurring from '~/database/Models/RecurringExpense'
+import { connectToDatabase } from '~/database/index'
 
 export default defineEventHandler(async (event) => {
   const b = await readBody(event)
@@ -7,6 +8,9 @@ export default defineEventHandler(async (event) => {
   if (typeof b?.amount !== 'number' || !b?.category || !['monthly','yearly'].includes(b?.frequency)) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })
   }
+
+  await connectToDatabase()
+
   const doc = await Recurring.create({
     amount: b.amount,
     category: b.category,
