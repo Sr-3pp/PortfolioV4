@@ -1,8 +1,10 @@
 import Expense from '~/database/Models/Expense'
 import RecurringExpense from '~/database/Models/RecurringExpense'
 import { connectToDatabase } from '~/database/index'
+import { requireSession } from '~~/server/utils/requireSession'
 
 export default defineEventHandler(async (event) => {
+  await requireSession(event)
   const q = getQuery(event)
 
   // --- Params & validation ---

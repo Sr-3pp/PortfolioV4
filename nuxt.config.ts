@@ -18,8 +18,11 @@ export default defineNuxtConfig({
       siteImage: '/img/3pp.webp',
       twitterHandle: '@sr3pp',
       contactMail: process.env.NUXT_CONTACT_MAIL,
+      adminEmails: process.env.NUXT_ADMIN_EMAILS || '',
+      apiRequireBearer: process.env.NUXT_API_REQUIRE_BEARER === '1' || false,
+      debugApiAuth: process.env.NUXT_DEBUG_API_AUTH === '1' || false,
     },
-    mongodbUri: process.env.NUXT_MONGO_URI
+    mongodbUri: process.env.NUXT_MONGO_URI,
   },
   app: {
     head: {
