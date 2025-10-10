@@ -50,4 +50,12 @@ export default defineNuxtConfig({
       pass: process.env.NUXT_EMAIL_PASS || '',
     },
   },
+
+  // Ensure Node serverless runtime on Vercel and keep native module external
+  nitro: {
+    preset: 'vercel',
+    externals: {
+      external: ['better-sqlite3']
+    }
+  }
 })

@@ -6,10 +6,21 @@ import { mkdirSync } from "node:fs";
 
 // Resolve an absolute, writable path for the SQLite database.
 // Avoid using "~" (Nuxt alias) as this must be a filesystem path.
-const dbFile = process.env.BETTER_AUTH_SQLITE_PATH || join(process.cwd(), ".data", "auth.sqlite");
+// Prefer explicit path via env. In serverless (Vercel), use /tmp (writable).
+function isVercelLike() {
+  return !!(process.env.VERCEL || process.env.NITRO_PRESET === 'vercel' || process.env.NOW_REGION)
+}
 
-// Ensure the directory exists before opening the database
-mkdirSync(dirname(dbFile), { recursive: true });
+let dbFile = process.env.BETTER_AUTH_SQLITE_PATH || ''
+if (!dbFile) dbFile = isVercelLike() ? '/tmp/auth.sqlite' : join(process.cwd(), '.data', 'auth.sqlite')
+
+// Ensure the directory exists before opening the database; if not writable, fall back to /tmp
+try {
+  mkdirSync(dirname(dbFile), { recursive: true })
+} catch {
+  dbFile = '/tmp/auth.sqlite'
+  try { mkdirSync(dirname(dbFile), { recursive: true }) } catch {}
+}
 
 export const auth = betterAuth({
   database: new Database(dbFile),
