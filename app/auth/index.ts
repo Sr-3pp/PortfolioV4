@@ -23,6 +23,8 @@ try {
 }
 
 export const auth = betterAuth({
+  // REQUIRED: Provide a strong, stable secret in production
+  secret: process.env.BETTER_AUTH_SECRET || (process.env.NODE_ENV === 'production' ? undefined as any : 'dev-secret-change-me'),
   database: new Database(dbFile),
   // Ensure dev + production origins are trusted to avoid "Invalid origin" during auth
   basePath: "/api/auth",
