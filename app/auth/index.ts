@@ -1,6 +1,7 @@
 // app/auth/index.ts
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { bearer } from "better-auth/plugins";
 import mongoose from "mongoose";
 import type { Db } from "mongodb";
 import { useRuntimeConfig } from "#imports";
@@ -39,10 +40,10 @@ export async function getAuth() {
   
   _auth = betterAuth({
     database: mongodbAdapter(db, { client }), // client is optional
-    // You can put your Better Auth options/plugins here:
+    // In production, you must set BETTER_AUTH_SECRET; in dev fall back to a default
+    secret: process.env.BETTER_AUTH_SECRET || (process.env.NODE_ENV === 'production' ? (undefined as unknown as string) : 'dev-secret-change-me'),
     emailAndPassword: { enabled: true },
-    // oauth: { ... },
-    // user: { additionalFields: { role: { type: "string", defaultValue: "user", input: false } } },
+    plugins: [bearer()],
   });
 
   return _auth;
