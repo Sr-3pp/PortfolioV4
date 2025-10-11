@@ -1,7 +1,5 @@
 // Global middleware to protect all routes under "/admin".
-// It expects an auth session endpoint to be available at `/api/auth/session`.
-// When integrating Better Auth, ensure that endpoint returns the authenticated user
-// or a 401/falsey payload when not authenticated.
+// It checks authentication via `/api/auth/me` which returns `{ user }` or 401.
 
 export default defineNuxtRouteMiddleware(async (to) => {
   if (!to.path.startsWith('/admin')) return
@@ -12,13 +10,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
       .split(',')
       .map(s => s.trim().toLowerCase())
       .filter(Boolean)
-    // Better Auth session endpoint
-    const headers = process.server ? useRequestHeaders(['cookie']) : undefined
-    const session: any = await $fetch('/api/auth/get-session', {
+    // Better Auth `me` endpoint; forward cookies on SSR
+    const headers = import.meta.server ? useRequestHeaders(['cookie']) : undefined
+    const session: { user?: { email?: string } } | null = await $fetch('/api/auth/me', {
       method: 'GET',
-      headers: headers as any
+      headers: headers as Record<string, string> | undefined
     })
-    const isAuthed = !!(session && (session.user || session.session))
+    const isAuthed = !!(session && session.user)
     if (!isAuthed) {
       return navigateTo({ path: '/login', query: { next: to.fullPath } })
     }

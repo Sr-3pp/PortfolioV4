@@ -2,6 +2,7 @@ import Expense from '~/database/Models/Expense'
 import RecurringExpense from '~/database/Models/RecurringExpense'
 import { connectToDatabase } from '~/database/index'
 import { requireSession } from '~~/server/utils/requireSession'
+import type { RecurringExpense as RecurringExpenseType } from '~/types/db'
 
 export default defineEventHandler(async (event) => {
   await requireSession(event)
@@ -112,7 +113,7 @@ export default defineEventHandler(async (event) => {
   ])
 
   // Sum recurring monthly from the list we already computed
-  const recurringMonthly = recurring.reduce((sum, r: any) => sum + (r.monthlyEquivalent || 0), 0)
+  const recurringMonthly = recurring.reduce((sum: number, r: Partial<RecurringExpenseType> & { monthlyEquivalent?: number }) => sum + (r.monthlyEquivalent || 0), 0)
 
   return {
     success: true,

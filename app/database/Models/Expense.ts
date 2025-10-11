@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 import allowedCategories from "../utils/allowedCategories";
 const expenseSchema = new mongoose.Schema(
   {
@@ -15,4 +15,3 @@ const expenseSchema = new mongoose.Schema(
 );
 export default mongoose.models.Expense ||
   mongoose.model("Expense", expenseSchema, "expense");
-

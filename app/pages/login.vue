@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const route = useRoute()
 const router = useRouter()
 const next = computed(() => (typeof route.query.next === 'string' ? route.query.next : '/'))
@@ -54,7 +55,7 @@ async function onSubmit() {
       body: { email: form.email, password: form.password }
     })
     router.replace(next.value)
-  } catch (e: any) {
+  } catch (e: unknown) {
     error.value = e?.data?.message || e?.message || 'Sign-in failed'
   } finally {
     pending.value = false

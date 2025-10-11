@@ -1,7 +1,7 @@
-import { getHeader, createError } from 'h3'
+import { getHeader, createError, type H3Event } from 'h3'
 
 export async function requireSession(
-  event: any,
+  event: H3Event,
   opts: { allowlist?: boolean; tokenOnly?: boolean } = {}
 ) {
   const { allowlist = true, tokenOnly = false } = opts
@@ -18,7 +18,7 @@ export async function requireSession(
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
-  const session: any = await $fetch('/api/auth/get-session', {
+  const session: { user?: { email?: string } } | null = await $fetch('/api/auth/me', {
     method: 'GET',
     headers: {
       ...(cookie ? { cookie } : {}),
@@ -26,7 +26,7 @@ export async function requireSession(
     },
   }).catch(() => null)
 
-  const isAuthed = !!(session && (session.user || session.session))
+  const isAuthed = !!(session && session.user)
   if (!isAuthed) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }

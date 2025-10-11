@@ -63,6 +63,7 @@
 </template>
 
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
 import allowedCategories from '~/database/utils/allowedCategories'
 
 definePageMeta({})

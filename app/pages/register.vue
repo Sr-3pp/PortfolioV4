@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const router = useRouter()
 const pending = ref(false)
 const error = ref('')
@@ -43,7 +44,7 @@ async function onSubmit() {
     })
     // After creating account, redirect to /login for sign-in
     router.replace({ path: '/login', query: { created: '1' } })
-  } catch (e: any) {
+  } catch (e: unknown) {
     error.value = e?.data?.message || e?.message || 'Registration failed'
   } finally {
     pending.value = false

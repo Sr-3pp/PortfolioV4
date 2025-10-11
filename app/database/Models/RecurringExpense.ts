@@ -1,7 +1,7 @@
 // /server/models/RecurringExpense.ts
-import mongoose, { Schema, InferSchemaType, Model } from 'mongoose'
-import allowedCategories from "../utils/allowedCategories";
-type Category = typeof allowedCategories[number]
+import type { InferSchemaType, Model } from 'mongoose'
+import mongoose, { Schema } from 'mongoose'
+import allowedCategories from "../utils/allowedCategories"
 
 const RecurringExpenseSchema = new Schema({
   amount: { type: Number, required: true, min: 0 },
@@ -26,7 +26,7 @@ const RecurringExpenseSchema = new Schema({
   remainingOccurrences: { type: Number },         // optional cap; decremented on each run
 }, { timestamps: true })
 
-export type RecurringExpense = InferSchemaType<typeof RecurringExpenseSchema>
+type RecurringExpenseDoc = InferSchemaType<typeof RecurringExpenseSchema>
 
 // --- Helpers to compute next run (no external deps) ---
 function clampDay(year: number, monthIndex0: number, day: number) {
@@ -76,7 +76,7 @@ RecurringExpenseSchema.pre('save', function(next) {
 })
 
 const RecurringExpenseModel =
-  (mongoose.models.RecurringExpense as Model<RecurringExpense>) ||
-  mongoose.model<RecurringExpense>('RecurringExpense', RecurringExpenseSchema)
+  (mongoose.models.RecurringExpense as Model<RecurringExpenseDoc>) ||
+  mongoose.model<RecurringExpenseDoc>('RecurringExpense', RecurringExpenseSchema)
 
 export default RecurringExpenseModel

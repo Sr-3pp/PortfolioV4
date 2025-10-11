@@ -35,7 +35,9 @@ export default defineEventHandler(async (event) => {
       const s = new URL(siteUrl)
       isExternal = o.host !== s.host
     }
-  } catch {}
+  } catch {
+    // Ignore malformed URL headers
+  }
 
   // Optional mode to always require Bearer token
   const forceBearer: boolean = !!cfg.public?.apiRequireBearer
@@ -80,7 +82,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const session: any = await $fetch('/api/auth/get-session', {
+    const session: { user?: { email?: string } } = await $fetch('/api/auth/me', {
       method: 'GET',
       headers: {
         ...(tokenOnly ? {} : { cookie }),
@@ -88,7 +90,7 @@ export default defineEventHandler(async (event) => {
       }
     })
 
-    const isAuthed = !!(session && (session.user || session.session))
+    const isAuthed = !!(session && session.user)
     if (!isAuthed) {
       if (debug) console.log('[api-auth] blocked: get-session returned null')
       throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })

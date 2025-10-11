@@ -10,6 +10,7 @@
 </template>
 
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-unused-vars */
 definePageMeta({
   // Not strictly required since we use a global middleware scoped to /admin,
   // but kept as explicit marker for maintainers.
@@ -19,8 +20,10 @@ definePageMeta({
 const router = useRouter()
 async function logout() {
   try {
-    await $fetch('/api/auth/sign-out', { method: 'POST' })
+    await $fetch('/api/auth/logout', { method: 'POST' })
     router.replace('/login')
-  } catch (e) {}
+  } catch {
+    // ignore
+  }
 }
 </script>
