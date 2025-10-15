@@ -8,7 +8,15 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "lint": "node ./scripts/run-eslint.mjs ."
+    "lint": "node ./scripts/run-eslint.mjs .",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "nuxt typecheck",
+    "vercel:ignore": "node scripts/vercel-ignore-build.js",
+    "vercel:ignore:bash": "bash scripts/vercel-ignore-build.sh",
+    "ci:check": "pnpm lint && pnpm test:run && pnpm typecheck"
   },
   "dependencies": {
     "@nuxt/content": "3.7.0",
@@ -48,8 +56,11 @@
     "@iconify-json/heroicons": "^1.2.0",
     "@iconify-json/mdi": "^1.2.0",
     "@types/node": "^24.5.0",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "happy-dom": "^20.0.1",
     "nodemailer": "^7.0.6",
     "nuxt-nodemailer": "^1.1.2",
-    "pug": "^3.0.3"
+    "pug": "^3.0.3",
+    "vitest": "^3.2.4"
   }
 }

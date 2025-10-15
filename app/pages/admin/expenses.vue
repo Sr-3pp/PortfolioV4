@@ -2,8 +2,64 @@
 UContainer.py-8
   .flex.items-center.justify-between.mb-4
     h1.text-2xl.font-semibold Expenses
-    div
-      UButton(size="sm" variant="soft" :loading="pendingAny" @click="refreshAll") Refresh
+    .flex.gap-2
+      UButton(size="sm" icon="i-heroicons-plus" @click="isCreateModalOpen = true") Add Expense
+      UButton(size="sm" variant="soft" :loading="pendingAny || pending" @click="refreshAll") Refresh
+
+  // Month/Year Selector
+  UCard.mb-6
+    .flex.flex-wrap.items-center.gap-3
+      USelectMenu(
+        v-model="selectedMonth"
+        :items="monthOptions"
+        value-attribute="value"
+        option-attribute="label"
+        placeholder="Select month"
+      )
+      USelectMenu(
+        v-model="selectedYear"
+        :items="yearOptions"
+        value-attribute="value"
+        option-attribute="label"
+        placeholder="Select year"
+      )
+      UButton(size="sm" variant="ghost" @click="resetToCurrentMonth") Current Month
+
+  // Balance Dashboard
+  UAlert(v-if="error" color="red" variant="subtle" :title="formatError(error)")
+  
+  .grid.grid-cols-1.md_grid-cols-3.gap-4.mb-6(v-if="!pending && summary")
+    // One-time Expenses Card
+    UCard
+      template(#header)
+        .flex.items-center.justify-between
+          span.text-sm.font-medium.text-gray-600 One-time Expenses
+          UIcon(name="i-heroicons-credit-card" class="w-5 h-5 text-blue-500")
+      .text-3xl.font-bold.text-blue-600 {{ formatCurrency(summary.totals.expenses) }}
+      .text-xs.text-gray-500.mt-1 {{ expenseCount }} transactions
+
+    // Recurring Expenses Card
+    UCard
+      template(#header)
+        .flex.items-center.justify-between
+          span.text-sm.font-medium.text-gray-600 Recurring (Monthly)
+          UIcon(name="i-heroicons-arrow-path" class="w-5 h-5 text-purple-500")
+      .text-3xl.font-bold.text-purple-600 {{ formatCurrency(summary.totals.recurring) }}
+      .text-xs.text-gray-500.mt-1 {{ recurringCount }} active subscriptions
+
+    // Total Combined Card
+    UCard
+      template(#header)
+        .flex.items-center.justify-between
+          span.text-sm.font-medium.text-gray-600 Total Balance
+          UIcon(name="i-heroicons-calculator" class="w-5 h-5 text-green-500")
+      .text-3xl.font-bold.text-green-600 {{ formatCurrency(summary.totals.combined) }}
+      .text-xs.text-gray-500.mt-1 Combined total for {{ monthName }} {{ selectedYear }}
+
+  // Loading state
+  .grid.grid-cols-1.md_grid-cols-3.gap-4.mb-6(v-if="pending")
+    UCard(v-for="i in 3" :key="i")
+      USkeleton.h-20
 
   UCard
     // Filters
@@ -12,15 +68,15 @@ UContainer.py-8
       USelectMenu(
         v-model="filters.category"
         :items="categoryItems"
-        value-key="value"
-        label-key="label"
+        value-attribute="value"
+        option-attribute="label"
         placeholder="All categories"
       )
       USelectMenu(
         v-model="filters.method"
         :items="methodItems"
-        value-key="value"
-        label-key="label"
+        value-attribute="value"
+        option-attribute="label"
         placeholder="All methods"
       )
       UButton(size="sm" variant="ghost" @click="clearFilters") Clear
@@ -60,6 +116,12 @@ UContainer.py-8
         )
           template(#empty)
             UAlert(title="No recurring expenses found" color="gray" variant="subtle")
+
+// Create Expense Modal
+ExpenseCreateForm(
+  v-model="isCreateModalOpen"
+  @success="handleExpenseCreated"
+)
 </template>
 
 <script setup lang="ts">
@@ -95,8 +157,76 @@ const {
   refreshAll,
 } = useExpense()
 
+// --- Balance Summary Data ---
+const now = new Date()
+const selectedMonth = ref(now.getMonth() + 1) // 1-12
+const selectedYear = ref(now.getFullYear())
+
+// Month options (1-12)
+const monthOptions = [
+  { label: 'January', value: 1 },
+  { label: 'February', value: 2 },
+  { label: 'March', value: 3 },
+  { label: 'April', value: 4 },
+  { label: 'May', value: 5 },
+  { label: 'June', value: 6 },
+  { label: 'July', value: 7 },
+  { label: 'August', value: 8 },
+  { label: 'September', value: 9 },
+  { label: 'October', value: 10 },
+  { label: 'November', value: 11 },
+  { label: 'December', value: 12 }
+]
+
+// Year options (current year ± 5 years)
+const yearOptions = computed(() => {
+  const currentYear = now.getFullYear()
+  const years: Array<{ label: string; value: number }> = []
+  for (let i = currentYear - 5; i <= currentYear + 1; i++) {
+    years.push({ label: String(i), value: i })
+  }
+  return years.reverse()
+})
+
+// Computed query string
+const queryString = computed(() => `month=${selectedMonth.value}&year=${selectedYear.value}`)
+
+// Fetch summary data
+const { data: summary, pending, error, refresh } = useFetch<any>(
+  () => `/api/expense/summary?${queryString.value}`,
+  {
+    server: false,
+    credentials: 'include',
+    watch: [selectedMonth, selectedYear]
+  }
+)
+
+// Computed values
+const monthName = computed(() => {
+  const option = monthOptions.find(m => m.value === selectedMonth.value)
+  return option?.label || ''
+})
+
+const expenseCount = computed(() => summary.value?.expenses?.length || 0)
+const recurringCount = computed(() => summary.value?.recurring?.length || 0)
+
+// Actions
+function resetToCurrentMonth() {
+  selectedMonth.value = now.getMonth() + 1
+  selectedYear.value = now.getFullYear()
+}
+
+// --- Create Expense Modal ---
+const isCreateModalOpen = ref(false)
+
+async function handleExpenseCreated() {
+  // Refresh data after expense is created
+  await refreshAll()
+  await refresh() // Refresh summary
+}
+
 // --- Select options via composable -> normalize to Nuxt UI SelectMenu items ---
-const { categoryOptions, methodOptions } = useExpenseFilters()
+const { categoryOptions, methodOptions, categories, methods } = useExpenseFilters()
 
 /**
  * Ensures items are { label: string, value: string|undefined }
@@ -255,6 +385,14 @@ function formatDate(d: any) {
 
 function formatErr(e: any) {
   try { return e?.data?.message || e?.message || String(e) } catch { return 'Request failed' }
+}
+
+function formatError(e: any) {
+  try {
+    return e?.data?.message || e?.message || String(e)
+  } catch {
+    return 'Failed to load data'
+  }
 }
 
 onMounted(() => {

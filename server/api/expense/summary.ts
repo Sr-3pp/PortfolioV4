@@ -100,11 +100,20 @@ export default defineEventHandler(async (event) => {
         amountNum: {
           $convert: { input: '$amount', to: 'double', onError: 0, onNull: 0 }
         },
+        startMonth: { $month: '$startDate' }, // Extract month from startDate (1-12)
         monthlyEquivalent: {
           $cond: [
             { $eq: ['$frequency', 'monthly'] },
+            // Monthly: always include full amount
             { $convert: { input: '$amount', to: 'double', onError: 0, onNull: 0 } },
-            { $divide: [{ $convert: { input: '$amount', to: 'double', onError: 0, onNull: 0 } }, 12] }
+            // Yearly: only include if startMonth matches the selected month
+            {
+              $cond: [
+                { $eq: [{ $month: '$startDate' }, month0 + 1] }, // month0 is 0-indexed, $month returns 1-12
+                { $convert: { input: '$amount', to: 'double', onError: 0, onNull: 0 } },
+                0 // Not due this month
+              ]
+            }
           ]
         }
       }
