@@ -24,9 +24,16 @@ print_section() {
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 }
 
+# Check if pnpm is available
+if ! command -v pnpm &> /dev/null; then
+    echo -e "${RED}❌ pnpm is not available${NC}"
+    echo -e "${YELLOW}⚠️  Skipping checks - proceeding with deployment${NC}"
+    exit 0
+fi
+
 # 1. Run Linter
 print_section "📝 Running ESLint"
-if pnpm lint; then
+if pnpm run lint; then
     echo -e "${GREEN}✅ Linting passed${NC}"
 else
     echo -e "${RED}❌ Linting failed${NC}"
@@ -35,7 +42,7 @@ fi
 
 # 2. Run Tests
 print_section "🧪 Running Tests"
-if pnpm test:run; then
+if pnpm run test:run; then
     echo -e "${GREEN}✅ Tests passed${NC}"
 else
     echo -e "${RED}❌ Tests failed${NC}"
@@ -44,7 +51,7 @@ fi
 
 # 3. Type Check (optional but recommended)
 print_section "🔍 Running Type Check"
-if pnpm exec nuxt typecheck; then
+if pnpm run typecheck; then
     echo -e "${GREEN}✅ Type check passed${NC}"
 else
     echo -e "${YELLOW}⚠️  Type check failed (warning only)${NC}"
@@ -63,6 +70,6 @@ else
     echo ""
     echo "To deploy anyway, you can:"
     echo "1. Fix the failing checks"
-    echo "2. Or disable this check in Vercel settings"
+    echo "2. Or add [skip ci] to your commit message"
     exit 1
 fi

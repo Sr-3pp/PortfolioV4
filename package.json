@@ -15,6 +15,7 @@
     "test:coverage": "vitest run --coverage",
     "typecheck": "nuxt typecheck",
     "vercel:ignore": "node scripts/vercel-ignore-build.js",
+    "vercel:ignore:simple": "node scripts/vercel-ignore-build-simple.js",
     "vercel:ignore:bash": "bash scripts/vercel-ignore-build.sh",
     "ci:check": "pnpm lint && pnpm test:run && pnpm typecheck"
   },
