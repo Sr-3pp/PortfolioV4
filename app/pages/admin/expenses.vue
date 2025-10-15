@@ -1,111 +1,130 @@
 <template lang="pug">
-  UContainer.py-8
-    .flex.items-center.justify-between.mb-4
-      h1.text-2xl.font-semibold Expenses
-      div
-        UButton(size="sm" variant="soft" :loading="pendingAny" @click="refreshAll") Refresh
+UContainer.py-8
+  .flex.items-center.justify-between.mb-4
+    h1.text-2xl.font-semibold Expenses
+    div
+      UButton(size="sm" variant="soft" :loading="pendingAny" @click="refreshAll") Refresh
 
-    UCard
-      // Filters
-      .flex.flex-wrap.items-center.gap-3.mb-4
-        UInput(v-model="filters.query" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Search notes or category")
-        USelectMenu(v-model="filters.category" :options="categoryOptions" placeholder="All categories" clearable)
-        USelectMenu(v-model="filters.method" :options="methodOptions" placeholder="All methods" clearable)
-        UButton(size="sm" variant="ghost" @click="clearFilters") Clear
+  UCard
+    // Filters
+    .flex.flex-wrap.items-center.gap-3.mb-4
+      UInput(v-model="filters.query" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Search notes or category")
+      USelectMenu(
+        v-model="filters.category"
+        :items="categoryItems"
+        value-key="value"
+        label-key="label"
+        placeholder="All categories"
+      )
+      USelectMenu(
+        v-model="filters.method"
+        :items="methodItems"
+        value-key="value"
+        label-key="label"
+        placeholder="All methods"
+      )
+      UButton(size="sm" variant="ghost" @click="clearFilters") Clear
 
-      // Toggle
-      .flex.items-center.gap-2.mb-4
-        UButton(:variant="view === 'expenses' ? 'solid' : 'ghost'" @click="view = 'expenses'") Expenses
-        UButton(:variant="view === 'recurring' ? 'solid' : 'ghost'" @click="view = 'recurring'") Recurring
+    // Toggle
+    .flex.items-center.gap-2.mb-4
+      UButton(:variant="view === 'expenses' ? 'solid' : 'ghost'" @click="switchView('expenses')") Expenses
+      UButton(:variant="view === 'recurring' ? 'solid' : 'ghost'" @click="switchView('recurring')") Recurring
 
-      // Status / Session + counts
-      .flex.items-center.justify-between.mb-2
-        UBadge(color="gray") {{ filteredExpenses.length }} expenses · {{ filteredRecurring.length }} recurring
+    // Status / Session + counts
+    .flex.items-center.justify-between.mb-2
+      UBadge(color="gray") {{ filteredExpenses.length }} expenses · {{ filteredRecurring.length }} recurring
 
-      ClientOnly
-        // Expenses Table (Nuxt UI UTable)
-        div(v-if="view === 'expenses'")
-          UAlert.mt-2(v-if="errorExp" color="red" variant="subtle" :title="formatErr(errorExp)")
-          UTable(:rows="pagedExpenseRows" :columns="expenseCols" row-key="id")
-            template(#empty)
-              UAlert(title="No expenses found" color="gray" variant="subtle")
-            // Render body with our mapped rows for reliability
-            template(#body)
-              tbody
-                tr(v-for="r in pagedExpenseRows" :key="r.id" class="hover:bg-gray-800/30")
-                  td.py-2.px-3 {{ formatDate(r.createdAt) }}
-                  td.py-2.px-3 {{ r.category || '-' }}
-                  td.py-2.px-3 {{ r.method || '-' }}
-                  td.py-2.px-3.text-right.font-medium {{ formatCurrency(r.amount) }}
-                  td.py-2.px-3 {{ r.note || '' }}
-          // Pagination (client-side)
-          .flex.items-center.justify-between.mt-3
-            span.text-sm.opacity-70 {{ pageLabel }}
-            UPagination(:total="expenseRows.length" v-model="page" :page-count="pageSize")
-        // Recurring Table (Nuxt UI UTable)
-        div(v-else)
-          UAlert.mt-2(v-if="errorRec" color="red" variant="subtle" :title="formatErr(errorRec)")
-          UTable(:rows="pagedRecurringRows" :columns="recurringCols" row-key="id")
-            template(#empty)
-              UAlert(title="No recurring expenses found" color="gray" variant="subtle")
-            template(#body)
-              tbody
-                tr(v-for="r in pagedRecurringRows" :key="r.id" class="hover:bg-gray-800/30")
-                  td.py-2.px-3
-                    UBadge(:color="(r.status === 'active') ? 'green' : 'gray'") {{ r.status }}
-                  td.py-2.px-3 {{ r.category || '-' }}
-                  td.py-2.px-3.text-right.font-medium {{ formatCurrency(r.amount) }}
-                  td.py-2.px-3 {{ r.frequency }}
-                  td.py-2.px-3 {{ r.interval }}
-                  td.py-2.px-3.text-right {{ formatCurrency(r.monthlyEquivalent) }}
-                  td.py-2.px-3 {{ formatDate(r.startDate) }}
-                  td.py-2.px-3 {{ formatDate(r.nextRun) }}
+    ClientOnly
+      // Expenses Table (Nuxt UI Table)
+      div(v-if="view === 'expenses'")
+        UAlert.mt-2(v-if="errorExp" color="red" variant="subtle" :title="formatErr(errorExp)")
+        UTable(
+          :data="pagedExpenseRows"
+          :columns="expenseCols"
+          v-model:sorting="sorting"
+        )
+          template(#empty)
+            UAlert(title="No expenses found" color="gray" variant="subtle")
+        // Pagination (client-side)
+        .flex.items-center.justify-between.mt-3
+          span.text-sm.opacity-70 {{ pageLabel }}
+          UPagination(:total="expenseRows.length" v-model="page" :page-count="pageSize")
+
+      // Recurring Table (Nuxt UI Table)
+      div(v-else)
+        UAlert.mt-2(v-if="errorRec" color="red" variant="subtle" :title="formatErr(errorRec)")
+        UTable(
+          :data="pagedRecurringRows"
+          :columns="recurringCols"
+          v-model:sorting="sorting"
+        )
+          template(#empty)
+            UAlert(title="No recurring expenses found" color="gray" variant="subtle")
 </template>
 
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
-import allowedCategories from '~/database/utils/allowedCategories'
 
 definePageMeta({})
 
 const view = ref<'expenses' | 'recurring'>('expenses')
 const page = ref(1)
 const pageSize = 20
-const sort = ref<{ column: string; direction: 'asc' | 'desc' } | undefined>({ column: 'createdAt', direction: 'desc' })
 
-const filters = reactive({ query: '', category: undefined as string | undefined, method: undefined as string | undefined })
+// Table sorting state (TanStack format). Default: createdAt desc.
+type SortingState = Array<{ id: string; desc?: boolean }>
+const sorting = ref<SortingState>([{ id: 'createdAt', desc: true }])
 
-const { data: expensesData, pending: pendingExp, error: errorExp, refresh: refreshExpenses } = await useFetch('/api/expense', { method: 'GET', server: false, credentials: 'include' })
-const { data: recurringData, pending: pendingRec, error: errorRec, refresh: refreshRecurring } = await useFetch('/api/expense/recurring', { method: 'GET', server: false, credentials: 'include' })
-
-const pendingAny = computed(() => pendingExp.value || pendingRec.value)
-function refreshAll() { refreshExpenses(); refreshRecurring() }
-
-const expenses = computed<any[]>(() => Array.isArray(expensesData.value) ? expensesData.value : [])
-const recurring = computed<any[]>(() => Array.isArray(recurringData.value) ? recurringData.value : [])
-
-const categoryOptions = computed(() => [{ label: 'All categories', value: undefined }, ...allowedCategories.map((c: string) => ({ label: c, value: c }))])
-const methodOptions = computed(() => {
-  const set = new Set(expenses.value.map(e => e.method).filter(Boolean))
-  return [{ label: 'All methods', value: undefined }, ...Array.from(set).map(m => ({ label: m, value: m }))]
+const filters = reactive({
+  query: '',
+  category: undefined as string | undefined,
+  method: undefined as string | undefined
 })
 
+// Reset pagination whenever filters or sorting change
+watch(() => [filters.query, filters.category, filters.method], () => { page.value = 1 })
+watch(sorting, () => { page.value = 1 }, { deep: true })
+
+// Centralized fetch/state via composable
+const {
+  expenses,
+  recurring,
+  pendingAny,
+  errorExp,
+  errorRec,
+  refreshAll,
+} = useExpense()
+
+// --- Select options via composable -> normalize to Nuxt UI SelectMenu items ---
+const { categoryOptions, methodOptions } = useExpenseFilters()
+
+/**
+ * Ensures items are { label: string, value: string|undefined }
+ * Accepts: ["A", "B"] or [{ label, value }, ...]
+ */
+const toItems = (list: unknown) => {
+  const arr = Array.isArray(list) ? list : []
+  return arr.map((o: any) => typeof o === 'string'
+    ? ({ label: o, value: o })
+    : ({ label: o?.label ?? String(o?.value ?? ''), value: o?.value }))
+}
+
+// Add an explicit "All" option (value: undefined) if not already present
+const ensureAllOption = (items: Array<{ label: string, value: any }>, label = 'All') => {
+  const hasUndefined = items.some(i => i.value === undefined)
+  return hasUndefined ? items : [{ label, value: undefined }, ...items]
+}
+
+const categoryItems = computed(() => ensureAllOption(toItems(unref(categoryOptions)), 'All categories'))
+const methodItems   = computed(() => ensureAllOption(toItems(unref(methodOptions)), 'All methods'))
+
+// --- Filters (no manual sort here — let the table own sorting) ---
 const filteredExpenses = computed(() => {
   const q = filters.query.trim().toLowerCase()
   return expenses.value
     .filter(e => !filters.category || e.category === filters.category)
     .filter(e => !filters.method || e.method === filters.method)
     .filter(e => !q || String(e.note || '').toLowerCase().includes(q) || String(e.category || '').toLowerCase().includes(q))
-    .slice()
-    .sort((a, b) => {
-      const dir = sort.value?.direction === 'asc' ? 1 : -1
-      const col = sort.value?.column || 'createdAt'
-      const av = a[col] || a._eventDate || a.created_at
-      const bv = b[col] || b._eventDate || b.created_at
-      const ad = new Date(av).getTime()
-      const bd = new Date(bv).getTime()
-      return (ad - bd) * dir
-    })
 })
 
 const expenseRows = computed(() =>
@@ -119,6 +138,7 @@ const expenseRows = computed(() =>
   }))
 )
 
+// Client-side pagination
 const pagedExpenseRows = computed(() => {
   const start = (page.value - 1) * pageSize
   return expenseRows.value.slice(start, start + pageSize)
@@ -132,13 +152,12 @@ const pageLabel = computed(() => {
   return `${start}–${end} of ${total}`
 })
 
+// Recurring (no manual sort — table handles it)
 const filteredRecurring = computed(() => {
   const q = filters.query.trim().toLowerCase()
   return recurring.value
     .filter(r => !filters.category || r.category === filters.category)
     .filter(r => !q || String(r.note || '').toLowerCase().includes(q) || String(r.category || '').toLowerCase().includes(q))
-    .slice()
-    .sort((a, b) => new Date(b.createdAt || b.startDate).getTime() - new Date(a.createdAt || a.startDate).getTime())
 })
 
 const recurringRows = computed(() =>
@@ -156,7 +175,7 @@ const recurringRows = computed(() =>
       interval: Number(r.interval ?? 1),
       monthlyEquivalent: monthly,
       startDate: r.startDate,
-      nextRun: r.nextRun,
+      nextRun: r.nextRun
     }
   })
 )
@@ -166,26 +185,55 @@ const pagedRecurringRows = computed(() => {
   return recurringRows.value.slice(start, start + pageSize)
 })
 
+// --- Nuxt UI Table (TanStack) column defs ---
 const expenseCols = [
-  { id: 'createdAt', key: 'createdAt', label: 'Date', sortable: true },
-  { id: 'category', key: 'category', label: 'Category' },
-  { id: 'method', key: 'method', label: 'Method' },
-  { id: 'amount', key: 'amount', label: 'Amount', sortable: true },
-  { id: 'note', key: 'note', label: 'Note' },
+  {
+    accessorKey: 'createdAt',
+    header: 'Date',
+    cell: ({ row }: any) => formatDate(row.getValue('createdAt'))
+  },
+  { accessorKey: 'category', header: 'Category' },
+  { accessorKey: 'method', header: 'Method' },
+  {
+    accessorKey: 'amount',
+    header: 'Amount',
+    cell: ({ row }: any) => formatCurrency(row.getValue('amount'))
+  },
+  { accessorKey: 'note', header: 'Note' }
 ]
 
 const recurringCols = [
-  { id: 'status', key: 'status', label: 'Status' },
-  { id: 'category', key: 'category', label: 'Category' },
-  { id: 'amount', key: 'amount', label: 'Amount' },
-  { id: 'frequency', key: 'frequency', label: 'Frequency' },
-  { id: 'interval', key: 'interval', label: 'Interval' },
-  { id: 'monthlyEquivalent', key: 'monthlyEquivalent', label: 'Monthly' },
-  { id: 'startDate', key: 'startDate', label: 'Start' },
-  { id: 'nextRun', key: 'nextRun', label: 'Next' },
+  { accessorKey: 'status', header: 'Status' },
+  { accessorKey: 'category', header: 'Category' },
+  {
+    accessorKey: 'amount',
+    header: 'Amount',
+    cell: ({ row }: any) => formatCurrency(row.getValue('amount'))
+  },
+  { accessorKey: 'frequency', header: 'Frequency' },
+  { accessorKey: 'interval', header: 'Interval' },
+  {
+    accessorKey: 'monthlyEquivalent',
+    header: 'Monthly',
+    cell: ({ row }: any) => formatCurrency(row.getValue('monthlyEquivalent'))
+  },
+  {
+    accessorKey: 'startDate',
+    header: 'Start',
+    cell: ({ row }: any) => formatDate(row.getValue('startDate'))
+  },
+  {
+    accessorKey: 'nextRun',
+    header: 'Next',
+    cell: ({ row }: any) => formatDate(row.getValue('nextRun'))
+  }
 ]
 
-function onSortChange(val: any) { sort.value = val; page.value = 1 }
+// Helpers / events
+function switchView(v: 'expenses' | 'recurring') {
+  view.value = v
+  page.value = 1 // reset pagination when switching tabs
+}
 
 function clearFilters() {
   filters.query = ''
@@ -203,12 +251,6 @@ function formatDate(d: any) {
   const date = new Date(d)
   if (isNaN(date.getTime())) return '-'
   return date.toLocaleString()
-}
-
-function monthlyEquivalent(r: any) {
-  const amt = Number(r?.amount || 0)
-  if (r?.frequency === 'yearly') return amt / 12
-  return amt
 }
 
 function formatErr(e: any) {

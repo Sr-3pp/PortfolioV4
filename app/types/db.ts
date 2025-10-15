@@ -37,3 +37,12 @@ export type RecurringExpense = {
   updatedAt?: Date
 }
 
+export type Expense = {
+  _id?: string
+  amount: number
+  category: string
+  method: string
+  note?: string
+  createdAt?: Date
+  updatedAt?: Date
+}
