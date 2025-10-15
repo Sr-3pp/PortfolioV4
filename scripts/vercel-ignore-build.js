@@ -62,15 +62,20 @@ async function main() {
     checksPassed = false;
   }
 
-  // Optional: Type check (warning only by default)
-  try {
-    printSection('🔍 Type Check');
-    execSync('pnpm run typecheck', { stdio: 'inherit', env: process.env });
-    log('✅ Type check passed', colors.green);
-  } catch {
-    log('⚠️  Type check failed (warning only)', colors.yellow);
-    // Uncomment to fail on type errors:
-    // checksPassed = false;
+  // Skip type check on Vercel (can be slow and cause timeouts)
+  if (process.env.VERCEL !== '1') {
+    // Optional: Type check (warning only, only runs locally)
+    try {
+      printSection('🔍 Type Check');
+      execSync('pnpm run typecheck', { stdio: 'inherit', env: process.env, timeout: 30000 });
+      log('✅ Type check passed', colors.green);
+    } catch {
+      log('⚠️  Type check failed (warning only)', colors.yellow);
+      // Uncomment to fail on type errors:
+      // checksPassed = false;
+    }
+  } else {
+    log('⏭️  Skipping type check on Vercel', colors.yellow);
   }
 
   // Final result
