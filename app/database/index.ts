@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 import { useRuntimeConfig } from '#imports'
 
 declare global {
-  // eslint-disable-next-line no-var
+   
   var __mongooseConn: Promise<typeof mongoose> | undefined
 }
 
@@ -19,7 +19,7 @@ export async function connectToDatabase() {
 
   if (!uri) {
     console.warn('[DB] Missing mongodbUri in runtimeConfig or env.')
-    global.__mongooseConn = Promise.resolve(mongoose as any)
+    global.__mongooseConn = Promise.resolve(mongoose)
     return global.__mongooseConn
   }
 

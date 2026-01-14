@@ -1,8 +1,11 @@
 import Expense from '~/database/Models/Expense'
 import RecurringExpense from '~/database/Models/RecurringExpense'
 import { connectToDatabase } from '~/database/index'
+import { requireSession } from '~~/server/utils/requireSession'
+import type { RecurringExpense as RecurringExpenseType } from '~/types/db'
 
 export default defineEventHandler(async (event) => {
+  await requireSession(event)
   const q = getQuery(event)
 
   // --- Params & validation ---
@@ -97,11 +100,20 @@ export default defineEventHandler(async (event) => {
         amountNum: {
           $convert: { input: '$amount', to: 'double', onError: 0, onNull: 0 }
         },
+        startMonth: { $month: '$startDate' }, // Extract month from startDate (1-12)
         monthlyEquivalent: {
           $cond: [
             { $eq: ['$frequency', 'monthly'] },
+            // Monthly: always include full amount
             { $convert: { input: '$amount', to: 'double', onError: 0, onNull: 0 } },
-            { $divide: [{ $convert: { input: '$amount', to: 'double', onError: 0, onNull: 0 } }, 12] }
+            // Yearly: only include if startMonth matches the selected month
+            {
+              $cond: [
+                { $eq: [{ $month: '$startDate' }, month0 + 1] }, // month0 is 0-indexed, $month returns 1-12
+                { $convert: { input: '$amount', to: 'double', onError: 0, onNull: 0 } },
+                0 // Not due this month
+              ]
+            }
           ]
         }
       }
@@ -110,7 +122,7 @@ export default defineEventHandler(async (event) => {
   ])
 
   // Sum recurring monthly from the list we already computed
-  const recurringMonthly = recurring.reduce((sum, r: any) => sum + (r.monthlyEquivalent || 0), 0)
+  const recurringMonthly = recurring.reduce((sum: number, r: Partial<RecurringExpenseType> & { monthlyEquivalent?: number }) => sum + (r.monthlyEquivalent || 0), 0)
 
   return {
     success: true,

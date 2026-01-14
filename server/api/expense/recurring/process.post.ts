@@ -1,6 +1,8 @@
 import Recurring from '~/database/Models/RecurringExpense'
 import Expense from '~/database/Models/Expense'
 import { connectToDatabase } from '~/database/index'
+import { requireSession } from '~~/server/utils/requireSession'
+import type { RecurringExpense as RecurringExpenseType } from '~/types/db'
 
 /**
  * Utilities to advance dates while keeping Day-Of-Month where possible.
@@ -41,7 +43,8 @@ export default defineEventHandler(async (event) => {
   // if (auth !== `Bearer ${useRuntimeConfig().cronToken}`) {
   //   throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   // }
-	await connectToDatabase() 
+  await requireSession(event)
+  await connectToDatabase() 
   const now = new Date()
 
   // Find all active, due recurrences (no duplicate $or keys!)
@@ -83,8 +86,8 @@ export default defineEventHandler(async (event) => {
       r.lastRunAt = now
 
       // 3) Compute the subsequent nextRun
-      const interval = (r as any).interval ?? 1
-      const freq = (r as any).frequency as 'monthly' | 'yearly'
+      const interval = (r as unknown as RecurringExpenseType).interval ?? 1
+      const freq = (r as unknown as RecurringExpenseType).frequency
       const currentNext = r.nextRun ?? r.startDate
       const candidateNext = advanceNextRun(currentNext, freq, interval)
 
@@ -100,8 +103,9 @@ export default defineEventHandler(async (event) => {
       }
 
       await r.save()
-    } catch (err: any) {
-      errors.push({ id: String(r._id), error: err?.message || String(err) })
+    } catch (err: unknown) {
+      const msg = (err as { message?: string })?.message || String(err)
+      errors.push({ id: String(r._id), error: msg })
     }
   }
 
