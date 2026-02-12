@@ -1,10 +1,7 @@
-import type { IncomingMessage, ServerResponse } from 'http'
+import { getSessionFromRequest } from '~~/server/utils/auth'
 
 export default defineEventHandler(async (event) => {
-  const { getAuth } = await import('~/auth')
-  const auth = await getAuth()
-  // Use Better Auth API directly with H3 req/res
-  const session = await auth.api.getSession(event.node.req as IncomingMessage, event.node.res as ServerResponse)
+  const session = await getSessionFromRequest(event)
   if (!session?.user) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthenticated' })
   }

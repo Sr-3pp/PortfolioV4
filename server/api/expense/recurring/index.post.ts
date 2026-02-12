@@ -1,9 +1,7 @@
 import Recurring from '~/database/Models/RecurringExpense'
 import { connectToDatabase } from '~/database/index'
-import { requireSession } from '~~/server/utils/requireSession'
 
 export default defineEventHandler(async (event) => {
-  await requireSession(event)
   const b = await readBody(event)
   // Minimal validation
   

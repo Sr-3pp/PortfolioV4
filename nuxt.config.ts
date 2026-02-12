@@ -65,7 +65,7 @@ export default defineNuxtConfig({
     }
   }, 
   studio: {
-    route: 'admin',
+    route: '/studio',
     repository: {
       provider: 'github',
       owner: process.env.STUDIO_GITHUB_OWNER,
