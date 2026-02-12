@@ -4,11 +4,16 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   css: ['@/assets/css/main.css'],
-  modules: ['@nuxt/content', '@nuxt/eslint', '@nuxt/image', '@nuxt/scripts', '@nuxt/test-utils', '@nuxt/ui', 'nuxt-nodemailer'],
-  ui: {
-    // Ensure icons render during SSR to avoid hydration mismatch
-    icons: ['heroicons', 'mdi']
-  },
+  modules: [
+    '@nuxt/content',
+    '@nuxt/eslint',
+    '@nuxt/image',
+    '@nuxt/scripts',
+    '@nuxt/test-utils',
+    '@nuxt/ui',
+    'nuxt-nodemailer',
+    'nuxt-studio'
+  ],
   runtimeConfig: {
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://sr3pp.dev',
@@ -26,7 +31,8 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      titleTemplate: (chunk) => (chunk ? `${chunk} · Sr3pp` : 'Sr3pp — Vue & Nuxt Engineer'),
+      title: 'Sr3pp — Vue & Nuxt Engineer',
+      titleTemplate: '%s · Sr3pp',
       htmlAttrs: {
         lang: 'en'
       },
@@ -56,6 +62,15 @@ export default defineNuxtConfig({
     preset: 'vercel',
     externals: {
       external: ['better-sqlite3']
+    }
+  }, 
+  studio: {
+    route: 'admin',
+    repository: {
+      provider: 'github',
+      owner: process.env.STUDIO_GITHUB_OWNER,
+      repo: process.env.STUDIO_GITHUB_REPO,
+      branch: process.env.STUDIO_GITHUB_BRANCH || 'main' // Optional, defaults to 'main'
     }
   }
 })

@@ -1,13 +1,24 @@
 {
-  "name": "Jose Martin Ruiz Rico",
   "title": "Full Stack Developer focused on Vue & Nuxt",
-  "location": "Mexico",
   "contact": {
     "website": "https://sr3pp.dev",
     "linkedin": "https://linkedin.com/in/sr3pp",
     "email": "martin.ru@outlook.com"
   },
-  "profile": "Frontend-focused full stack developer with 10+ years of experience. Certified Senior Vue Developer with deep expertise in Vue, Nuxt, and modern web tooling. Known for building modular, scalable, and performant applications across banking, travel, and e-commerce products.",
+  "education": [
+    {
+      "program": "Graphic Design",
+      "institution": "UVM",
+      "start_year": 2010,
+      "end_year": 2014
+    },
+    {
+      "program": "Self-Taught Developer",
+      "institution": null,
+      "start_year": 2014,
+      "end_year": null
+    }
+  ],
   "experience": [
     {
       "company": "Exclusive Resorts",
@@ -98,47 +109,9 @@
       ]
     }
   ],
-  "freelance_projects": [
-    {
-      "name": "ICCN",
-      "description": "Built a Laravel + Vue CRM for a coaching network with secure onboarding, granular permissions, and a self-service admin panel.",
-      "link": "https://members.internationalccn.org"
-    },
-    {
-      "name": "All American Finishing",
-      "description": "Delivered a metal-finishing marketing site with Laravel and Vue, then led the Nuxt-based redesign currently in validation.",
-      "link": "https://allamericanfinishing.com"
-    },
-    {
-      "name": "All American Cabinetery",
-      "description": "Created a Nuxt + TypeScript catalog experience for a Las Vegas cabinetry studio, pairing custom CMS tooling with a polished UX.",
-      "link": "https://allamericancabinetery.com"
-    },
-    {
-      "name": "Quivi",
-      "description": "Launched and later rebuilt an autoparts e-commerce platform—first with Django REST + Nuxt, then as a full Nuxt implementation.",
-      "link": "https://quivi.com"
-    },
-    {
-      "name": "Birdsual",
-      "description": "Shipped a Nuxt 3 + Mongo portfolio for a graphic designer, balancing visual storytelling with a maintainable CMS layer.",
-      "link": "https://birdsualdesign.com"
-    }
-  ],
-  "education": [
-    {
-      "program": "Graphic Design",
-      "institution": "UVM",
-      "start_year": 2010,
-      "end_year": 2014
-    },
-    {
-      "program": "Self-Taught Developer",
-      "institution": null,
-      "start_year": 2014,
-      "end_year": null
-    }
-  ],
+  "location": "Mexico",
+  "name": "Jose Martin Ruiz Rico",
+  "profile": "Frontend-focused full stack developer with 10+ years of experience. Certified Senior Vue Developer with deep expertise in Vue, Nuxt, and modern web tooling. Known for building modular, scalable, and performant applications across banking, travel, and e-commerce products.",
   "skills": {
     "frontend": [
       "Vue 3",
@@ -174,5 +147,33 @@
       "Python"
     ]
   },
-  "source": "JoseMartinRuizRico_CV.pdf"
+  "source": "JoseMartinRuizRico_CV.pdf",
+  "freelancePreojects": [],
+  "freelance_projects": [
+    {
+      "name": "ICCN",
+      "description": "Built a Laravel + Vue CRM for a coaching network with secure onboarding, granular permissions, and a self-service admin panel.",
+      "link": "https://members.internationalccn.org"
+    },
+    {
+      "name": "All American Finishing",
+      "description": "Delivered a metal-finishing marketing site with Laravel and Vue, then led the Nuxt-based redesign currently in validation.",
+      "link": "https://allamericanfinishing.com"
+    },
+    {
+      "name": "All American Cabinetery",
+      "description": "Created a Nuxt + TypeScript catalog experience for a Las Vegas cabinetry studio, pairing custom CMS tooling with a polished UX.",
+      "link": "https://allamericancabinetery.com"
+    },
+    {
+      "name": "Quivi",
+      "description": "Launched and later rebuilt an autoparts e-commerce platform—first with Django REST + Nuxt, then as a full Nuxt implementation.",
+      "link": "https://quivi.com"
+    },
+    {
+      "name": "Birdsual",
+      "description": "Shipped a Nuxt 3 + Mongo portfolio for a graphic designer, balancing visual storytelling with a maintainable CMS layer.",
+      "link": "https://birdsualdesign.com"
+    }
+  ]
 }

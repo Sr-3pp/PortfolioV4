@@ -19,13 +19,32 @@ UModal.modal-certificates(v-model:open="open" description="My credentials")
 </template>
 
 <script lang="ts" setup>
+import type { Certificate, CertificateDocument } from '~/types/certificate'
+
 const { open } = useUiOverlay('certificates');
 
-const { data } = await useAsyncData('certificates', () =>
-  queryCollection('certificates').first()
+const normalizeCertificate = (doc: CertificateDocument): Certificate | null => {
+  const source = doc.meta ?? doc
+  if (!source?.name) return null
+
+  return {
+    name: source.name,
+    issuer: source.issuer ?? null,
+    link: source.link ?? null,
+    thumbnail: source.thumbnail ?? null,
+    summary: source.summary ?? null
+  }
+}
+
+const { data } = await useAsyncData<CertificateDocument[]>('certificates', () =>
+  queryCollection('certificates').all()
 );
 
-const certificates = computed(() => data.value?.meta?.certificates ?? []);
+const certificates = computed<Certificate[]>(() =>
+  (data.value ?? [])
+    .map(normalizeCertificate)
+    .filter((cert): cert is Certificate => cert !== null)
+);
 
 const templateBindings = {
   open,
