@@ -54,7 +54,7 @@ section
 </template>
 
 <script lang="ts" setup>
-import type { AboutContent, AboutCta, AboutContact, AboutSocialLink } from '~/types/about'
+import type { AboutContent, AboutCta, AboutContact, AboutMeta, AboutSocialLink } from '~/types/about'
 
 const { siteDescription, absoluteUrl, defaultImage } = useSiteMeta()
 
@@ -70,24 +70,21 @@ type NormalizedSkillSection = {
 }
 
 const about = computed<AboutContent | null>(() => aboutData.value ?? null)
+type LegacyAboutMeta = AboutMeta & Partial<Pick<AboutContent, 'name' | 'headline' | 'avatar' | 'contact' | 'skills' | 'experienceStartYear' | 'experienceNote'>>
+const legacyMeta = computed<LegacyAboutMeta | undefined>(() => about.value?.meta as LegacyAboutMeta | undefined)
 
-const name = computed(() => about.value?.name ?? 'Jose Martin Ruiz Rico')
-const headline = computed(() => about.value?.headline ?? 'Senior Frontend Engineer & Vue/Nuxt Specialist')
-const avatar = computed(() => about.value?.avatar ?? '/img/3pp.webp')
-
-const defaultContact: Required<AboutContact> = {
-  website: 'https://sr3pp.dev',
-  linkedin: 'https://linkedin.com/in/sr3pp',
-  email: 'martin.ru@outlook.com'
-}
+const name = computed(() => about.value?.name ?? legacyMeta.value?.name ?? 'Jose Martin Ruiz Rico')
+const headline = computed(() => about.value?.headline ?? legacyMeta.value?.headline ?? 'Senior Frontend Engineer & Vue/Nuxt Specialist')
+const avatar = computed(() => about.value?.avatar ?? legacyMeta.value?.avatar ?? '/img/3pp.webp')
 
 const contact = computed<Required<AboutContact>>(() => ({
-  ...defaultContact,
-  ...(about.value?.contact ?? {})
+  website: about.value?.contact?.website ?? legacyMeta.value?.contact?.website ?? '',
+  linkedin: about.value?.contact?.linkedin ?? legacyMeta.value?.contact?.linkedin ?? '',
+  email: about.value?.contact?.email ?? legacyMeta.value?.contact?.email ?? ''
 }))
 
 const skills = computed<NormalizedSkillSection[]>(() => {
-  const sections = about.value?.skills
+  const sections = about.value?.skills ?? legacyMeta.value?.skills
   if (!Array.isArray(sections)) return []
   return sections.map((section) => ({
     key: section.key ?? section.title ?? '',
@@ -98,14 +95,14 @@ const skills = computed<NormalizedSkillSection[]>(() => {
 })
 
 const experienceYears = computed(() => {
-  const start = Number(about.value?.experienceStartYear ?? 2015)
+  const start = Number(about.value?.experienceStartYear ?? legacyMeta.value?.experienceStartYear ?? 2015)
   return `${Math.max(0, new Date().getFullYear() - start)}+`
 })
 
 const defaultExperienceNote = 'Started in 2015 (Mexico)'
 
 const experienceNote = computed(
-  () => about.value?.meta?.experienceNote ?? about.value?.experienceNote ?? defaultExperienceNote
+  () => about.value?.experienceNote ?? about.value?.meta?.experienceNote ?? legacyMeta.value?.experienceNote ?? defaultExperienceNote
 )
 
 const { data: projectsData } = useNuxtData('projects')
