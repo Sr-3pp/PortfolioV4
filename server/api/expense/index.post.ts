@@ -1,9 +1,7 @@
 import Expense from '~/database/Models/Expense'
 import { connectToDatabase } from '~/database/index'
-import { requireSession } from '~~/server/utils/requireSession'
 
 export default defineEventHandler(async (event) => {
-  await requireSession(event)
   const body = await readBody(event)
 
   await connectToDatabase()

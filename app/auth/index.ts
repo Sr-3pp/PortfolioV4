@@ -1,50 +1,72 @@
 // app/auth/index.ts
-import { betterAuth } from "better-auth";
-import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import { bearer } from "better-auth/plugins";
-import mongoose from "mongoose";
-import type { Db } from "mongodb";
-import { useRuntimeConfig } from "#imports";
+import { betterAuth } from 'better-auth'
+import { mongodbAdapter } from 'better-auth/adapters/mongodb'
+import { bearer } from 'better-auth/plugins'
+import mongoose from 'mongoose'
+import type { Db, MongoClient } from 'mongodb'
+import { useRuntimeConfig } from '#imports'
 
 // --- connection singleton (works in serverless) ---
-let connecting: Promise<typeof mongoose> | null = null;
+let connecting: Promise<typeof mongoose> | null = null
 
 async function ensureMongoose() {
-  if (mongoose.connection.readyState === 1) return;       // already connected
+  if (mongoose.connection.readyState === 1) return
+
   if (!connecting) {
-    const { mongodbUri } = useRuntimeConfig();             // read from Nuxt runtimeConfig
-    if (!mongodbUri) throw new Error("Missing runtimeConfig.mongodbUri");
-    connecting = mongoose.connect(mongodbUri, {
-      // tweak as needed:
-      // serverSelectionTimeoutMS: 5000,
-      // maxPoolSize: 5,
-    });
+    const { mongodbUri } = useRuntimeConfig()
+    if (!mongodbUri) throw new Error('Missing runtimeConfig.mongodbUri')
+
+    connecting = mongoose.connect(mongodbUri).catch((error) => {
+      connecting = null
+      throw error
+    })
   }
-  await connecting;
+
+  await connecting
 }
 
 // --- Better Auth singleton ---
 let _auth:
   | ReturnType<typeof betterAuth>
-  | null = null;
+  | null = null
+let authInitializing: Promise<ReturnType<typeof betterAuth>> | null = null
 
 export async function getAuth() {
-  if (_auth) return _auth;
+  if (_auth) return _auth
 
-  await ensureMongoose();
-  const db: Db | undefined = mongoose.connection.db!;
-  if (!db) throw new Error("Mongoose connected but no db handle");
+  if (!authInitializing) {
+    authInitializing = (async () => {
+      await ensureMongoose()
 
-  // Optional: some Mongoose versions expose the underlying MongoClient:
-  const client = (mongoose.connection as unknown as { getClient?: () => unknown }).getClient?.();
-  
-  _auth = betterAuth({
-    database: mongodbAdapter(db, { client }), // client is optional
-    // In production, you must set BETTER_AUTH_SECRET; in dev fall back to a default
-    secret: process.env.BETTER_AUTH_SECRET || (process.env.NODE_ENV === 'production' ? (undefined as unknown as string) : 'dev-secret-change-me'),
-    emailAndPassword: { enabled: true },
-    plugins: [bearer()],
-  });
+      const db: Db | undefined = mongoose.connection.db!
+      if (!db) throw new Error('Mongoose connected but no db handle')
 
-  return _auth;
+      const client = (
+        mongoose.connection as unknown as { getClient?: () => MongoClient }
+      ).getClient?.()
+
+      const secret =
+        process.env.BETTER_AUTH_SECRET ||
+        (process.env.NODE_ENV === 'production' ? '' : 'dev-secret-change-me')
+
+      if (!secret) {
+        throw new Error('Missing BETTER_AUTH_SECRET in production')
+      }
+
+      _auth = betterAuth({
+        database: mongodbAdapter(db, { client }),
+        secret,
+        emailAndPassword: { enabled: true },
+        plugins: [bearer()],
+      })
+
+      return _auth
+    })().catch((error) => {
+      authInitializing = null
+      _auth = null
+      throw error
+    })
+  }
+
+  return authInitializing
 }

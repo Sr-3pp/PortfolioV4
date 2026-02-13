@@ -1,7 +1,6 @@
 import Recurring from '~/database/Models/RecurringExpense'
 import Expense from '~/database/Models/Expense'
 import { connectToDatabase } from '~/database/index'
-import { requireSession } from '~~/server/utils/requireSession'
 import type { RecurringExpense as RecurringExpenseType } from '~/types/db'
 
 /**
@@ -43,7 +42,6 @@ export default defineEventHandler(async (event) => {
   // if (auth !== `Bearer ${useRuntimeConfig().cronToken}`) {
   //   throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   // }
-  await requireSession(event)
   await connectToDatabase() 
   const now = new Date()
 

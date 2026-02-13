@@ -3,10 +3,9 @@ export interface Certificate {
   issuer?: string | null
   link?: string | null
   thumbnail?: string | null
+  summary?: string | null
 }
 
-export interface CertificatesDocument {
-  meta?: {
-    certificates?: Certificate[]
-  }
+export interface CertificateDocument extends Partial<Certificate> {
+  meta?: Partial<Certificate>
 }

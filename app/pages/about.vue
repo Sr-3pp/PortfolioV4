@@ -115,8 +115,9 @@ const { data: certs } = useNuxtData('certificates')
 const projectCount = computed(() => projectsData.value?.length ?? 0)
 
 const certificateCount = computed(() => {
-  const certificates = certs.value?.meta?.certificates
-  return Array.isArray(certificates) ? certificates.length : 0
+  if (Array.isArray(certs.value)) return certs.value.length
+  const legacyCertificates = certs.value?.meta?.certificates
+  return Array.isArray(legacyCertificates) ? legacyCertificates.length : 0
 })
 
 const socials = computed<AboutSocialLink[]>(() => {
