@@ -1,3 +1,5 @@
+import type { ContentCollectionItem } from '@nuxt/content'
+
 export type ProjectType = 'fulltime' | 'contractor' | 'freelance'
 
 export interface ProjectLink {
@@ -17,9 +19,10 @@ export interface ProjectMeta {
 }
 
 export interface ProjectContent {
-  title: string
+  title?: string
   description?: string
   meta?: ProjectMeta
   updatedAt?: string
-  [key: string]: unknown
 }
+
+export type ProjectDocument = Omit<ContentCollectionItem, 'title' | 'description' | 'meta' | 'updatedAt'> & ProjectContent

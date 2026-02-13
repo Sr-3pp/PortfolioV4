@@ -22,18 +22,6 @@ export default defineEventHandler(async (event) => {
     const cookieNames = authMode.hasCookie
       ? authMode.rawCookieHeader.split(';').map((part) => part.trim().split('=')[0])
       : []
-
-    console.log('[api-auth] incoming', {
-      path: pathname,
-      method: getMethod(event),
-      ...authMode.context,
-      hasAuthorization: authMode.hasAuthorization,
-      authorizationMasked: authMode.hasAuthorization
-        ? mask(authMode.authorization.replace(/^Bearer\s+/i, ''))
-        : null,
-      hasCookie: authMode.hasCookie,
-      cookieNames,
-    })
   }
 
   try {

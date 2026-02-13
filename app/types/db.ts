@@ -21,28 +21,33 @@ export type Session = {
 
 export type RecurringExpense = {
   _id?: string
+  id?: string
   amount: number
   category: string
   note?: string
   frequency: 'monthly' | 'yearly'
   interval?: number
-  startDate: Date
-  endDate?: Date
+  startDate: Date | string
+  endDate?: Date | string
   timezone?: string
   status?: 'active' | 'paused' | 'completed'
-  nextRun?: Date
-  lastRunAt?: Date
+  nextRun?: Date | string
+  lastRunAt?: Date | string
   remainingOccurrences?: number
-  createdAt?: Date
-  updatedAt?: Date
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  monthlyEquivalent?: number
 }
 
 export type Expense = {
   _id?: string
+  id?: string
   amount: number
   category: string
   method: string
   note?: string
-  createdAt?: Date
-  updatedAt?: Date
+  createdAt?: Date | string
+  created_at?: Date | string
+  _eventDate?: Date | string
+  updatedAt?: Date | string
 }

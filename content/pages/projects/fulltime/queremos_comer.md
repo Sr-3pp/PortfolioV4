@@ -10,12 +10,14 @@ links: [
 ]
 ---
 
-<Grid cols="1" :md="2" :lg="2">
+<Grid :cols="1" :md="2" :lg="2">
   <Card title="Overview">
-    Maintained and updated websites with relevant, appealing content while ensuring technical operations, security, and performance.
+    <div class="flex flex-col gap-4">
+      <p>Maintained and updated websites with relevant, appealing content while ensuring technical operations, security, and performance.</p>
+    </div>
   </Card>
   <Card title="Highlights">
-    <ul>
+    <ul class="flex flex-col gap-4 list-disc">
       <li>Maintained and updated websites with relevant content.</li>
       <li>Handled technical operations and ensured security/performance.</li>
       <li>Used analytics to improve UX and engagement.</li>

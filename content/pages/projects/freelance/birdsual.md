@@ -10,12 +10,14 @@ links: [
 ]
 ---
 
-<Grid cols="1" :md="2" :lg="2">
+<Grid :cols="1" :md="2" :lg="2">
   <Card title="Overview">
-    Crafted a Nuxt 3 + MongoDB portfolio with an editor-friendly admin, giving the designer full control over layouts, hero imagery, and copy without touching code.
+    <div class="flex flex-col gap-4">
+      <p>Crafted a Nuxt 3 + MongoDB portfolio with an editor-friendly admin, giving the designer full control over layouts, hero imagery, and copy without touching code.</p>
+    </div>
   </Card>
   <Card title="Highlights">
-    <ul>
+    <ul class="flex flex-col gap-4 list-disc">
       <li>Modeled flexible content blocks so case studies, process timelines, and galleries can be managed entirely from the CMS.</li>
       <li>Enabled bulk media uploads with automatic resizing and CDN delivery to keep pages lightweight.</li>
       <li>Tuned the build pipeline and caching strategy to preserve smooth animations and fast navigation.</li>

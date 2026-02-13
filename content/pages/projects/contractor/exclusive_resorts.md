@@ -10,12 +10,14 @@ links: [
 ]
 ---
 
-<Grid cols="1" :md="2" :lg="2">
+<Grid :cols="1" :md="2" :lg="2">
   <Card title="Overview">
-    Contract frontend work focused on maintaining and optimizing the Nuxt 3 public site. Drove a migration to Prismic Slice Machine and collaborated with content and marketing teams to streamline publishing.
+    <div class="flex flex-col gap-4">
+      <p>Contract frontend work focused on maintaining and optimizing the Nuxt 3 public site. Drove a migration to Prismic Slice Machine and collaborated with content and marketing teams to streamline publishing.</p>
+    </div>
   </Card>
   <Card title="Highlights">
-    <ul>
+    <ul class="flex flex-col gap-4 list-disc">
       <li>Maintained and optimized the Nuxt 3 public site.</li>
       <li>Migrated to Prismic Slice Machine for more modular content.</li>
       <li>Handled Salesforce content management and integrations.</li>

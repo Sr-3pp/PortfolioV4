@@ -10,12 +10,14 @@ links: [
 ]
 ---
 
-<Grid cols="1" :md="2" :lg="2">
+<Grid :cols="1" :md="2" :lg="2">
   <Card title="Overview">
-    Built a Laravel + Nuxt 2 marketing site with an admin dashboard tailored for industrial services, keeping the brand polished while making day-to-day updates effortless for the in-house team.
+    <div class="flex flex-col gap-4">
+      <p>Built a Laravel + Nuxt 2 marketing site with an admin dashboard tailored for industrial services, keeping the brand polished while making day-to-day updates effortless for the in-house team.</p>
+    </div>
   </Card>
   <Card title="Highlights">
-    <ul>
+    <ul class="flex flex-col gap-4 list-disc">
       <li>Implemented a block-based CMS so editors can compose landing pages, testimonials, and photo galleries on the fly.</li>
       <li>Added reusable quote and RFQ forms that pipe leads to operations via email and CRM webhooks.</li>
       <li>Optimized Lighthouse performance by pre-rendering key routes and lazy-loading heavy media assets.</li>

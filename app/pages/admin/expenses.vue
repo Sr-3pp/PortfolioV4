@@ -397,7 +397,6 @@ function formatError(e: any) {
 
 onMounted(() => {
   watch([expenses, recurring, errorExp, errorRec], ([e, r, ex, er]) => {
-    console.log('[admin/expenses] data', { expenses: e?.length, recurring: r?.length, errorExp: ex, errorRec: er })
   }, { immediate: true })
 })
 </script>

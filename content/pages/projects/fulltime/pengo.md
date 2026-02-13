@@ -10,12 +10,14 @@ links: [
 ]
 ---
 
-<Grid cols="1" :md="2" :lg="2">
+<Grid :cols="1" :md="2" :lg="2">
   <Card title="Overview">
-    At Pengo I worked on Magento-based e‑commerce, building custom modules and themes, and integrating third‑party services.
+    <div class="flex flex-col gap-4">
+      <p>At Pengo I worked on Magento-based e‑commerce, building custom modules and themes, and integrating third‑party services.</p>
+    </div>
   </Card>
   <Card title="Highlights">
-    <ul>
+    <ul class="flex flex-col gap-4 list-disc">
       <li>Created custom Magento modules and themes.</li>
       <li>Integrated third-party services and optimized performance.</li>
     </ul>

@@ -10,12 +10,14 @@ links: [
 ]
 ---
 
-<Grid cols="1" :md="2" :lg="2">
+<Grid :cols="1" :md="2" :lg="2">
   <Card title="Overview">
-    Worked as a contractor on Cars.com’s frontend ecosystem, delivering reusable web components and uplifting UI/UX and performance.
+    <div class="flex flex-col gap-4">
+      <p>Worked as a contractor on Cars.com’s frontend ecosystem, delivering reusable web components and uplifting UI/UX and performance.</p>
+    </div>
   </Card>
   <Card title="Highlights">
-    <ul>
+    <ul class="flex flex-col gap-4 list-disc">
       <li>Built and maintained web components using Lit and PHP.</li>
       <li>Improved UI/UX and frontend performance.</li>
       <li>Collaborated closely with engineering teams on QA and maintainability.</li>
