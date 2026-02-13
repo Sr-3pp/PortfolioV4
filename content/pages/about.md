@@ -1,7 +1,7 @@
 ---
 title: "About Martin Ruiz"
 name: "Jose Martin Ruiz Rico"
-headline: "Senior Frontend Engineer & Vue/Nuxt Specialist"
+headline: "Senior Frontend Engineer — Vue/Nuxt, Design Systems & Scalable UI Architecture"
 avatar: "/img/3pp.webp"
 experienceStartYear: 2015
 experienceNote: "Since 2015, leading Vue/Nuxt frontends across enterprise and consumer products."
@@ -68,12 +68,18 @@ socials:
     icon: "i-simple-icons-linkedin"
 alert:
   title: "What drives me"
-  description: "I love shipping clean, modular frontends with a strong emphasis on accessibility, performance, and DX. Most of my work lives in Vue/Nuxt ecosystems—leading design systems, establishing UI architecture, and mentoring teams on modern front-end practices—but I’m comfortable across stacks when the product needs it."
+  description: "I focus on building scalable frontend architectures that teams can grow with—design systems, component libraries, and high-performance Nuxt applications. I care deeply about accessibility, performance, and developer experience, and I enjoy mentoring teams toward cleaner, more maintainable front-end practices."
 cta:
   title: "Hand-picked case studies"
   description: "Explore a curated set of projects I’ve worked on across different engagement types."
   buttonLabel: "Browse projects"
 ---
-Frontend-focused Full-Stack developer with 10+ years of experience. Certified Senior Vue Developer, with deep expertise in Vue, Nuxt, and modern web tooling. Known for building modular, scalable, and performant applications across diverse industries like banking, travel, and e-commerce.
+Frontend-focused Full-Stack developer with 10+ years of experience building production-grade web applications. Certified Senior Vue Developer with deep expertise in Vue, Nuxt, and modern frontend architecture across enterprise and consumer products.
 
-Much of my day-to-day revolves around front-end architecture: leading component libraries, shaping design systems, and shipping production-ready interfaces that balance accessibility, performance, and brand expression. I pair that with a product mindset—partnering with designers, PMs, and stakeholders to translate product vision into fast, maintainable front-end experiences.
+I specialize in designing and leading scalable frontend systems: component libraries, design systems, dynamic page architectures, and high-performance SSR applications. My work spans industries such as banking, travel, and e-commerce, where reliability, accessibility, and performance are critical.
+
+In enterprise environments, I’ve led UI architecture and component strategies for large-scale platforms, helping teams ship consistent, maintainable interfaces across complex product ecosystems. In smaller teams and startups, I’ve taken full-stack ownership—building APIs, integrating payments, optimizing data pipelines, and delivering complete production systems.
+
+Beyond client work, I run my own skateboarding brand, where I design, build, and ship both the digital platform and physical products. This hands-on experience keeps me close to real users and reinforces a strong product mindset.
+
+I enjoy collaborating with designers, PMs, and engineers to turn product ideas into fast, accessible, and maintainable interfaces. Whether leading a design system, building a Nuxt SSR platform, or mentoring a team, my focus is always on shipping clean, modular solutions that scale.
