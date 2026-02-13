@@ -86,7 +86,8 @@ export default defineNuxtConfig({
       provider: 'github',
       owner: process.env.STUDIO_GITHUB_OWNER,
       repo: process.env.STUDIO_GITHUB_REPO,
-      branch: process.env.STUDIO_GITHUB_BRANCH || 'main' // Optional, defaults to 'main'
+      branch: process.env.STUDIO_GITHUB_BRANCH || 'main', // Optional, defaults to 'main'
+      rootDir: process.env.STUDIO_GITHUB_ROOT_DIR || 'content'
     }
   }
 })
