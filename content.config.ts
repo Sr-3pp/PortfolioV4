@@ -4,7 +4,10 @@ export default defineContentConfig({
   collections: {
     content: defineCollection({
       type: 'page',
-      source: 'pages/*.md'
+      source: {
+        include: 'pages/*.md',
+        prefix: '/'
+      }
     }),
     certificates: defineCollection({
       type: 'data',
