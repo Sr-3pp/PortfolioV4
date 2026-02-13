@@ -5,7 +5,7 @@ export default defineContentConfig({
     content: defineCollection({
       type: 'page',
       source: {
-        include: 'pages/*.md',
+        include: 'pages/**/*.md',
         prefix: '/'
       }
     }),

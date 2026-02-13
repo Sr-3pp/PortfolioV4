@@ -8,7 +8,7 @@ section
           .flex.flex-col
             h1.text-xl.font-semibold {{ name }}
             p(class="text-white/60") {{ headline }}
-      ContentRenderer.mt-3.leading-relaxed(v-if="about" :value="about" class="text-white/80")
+      ContentRenderer.mt-3.leading-relaxed.flex.flex-col.gap-4(v-if="about" :value="about" class="text-white/80")
       template(#footer)
         .flex.flex-wrap.gap-2
           UButton(icon="i-heroicons-envelope" :href="`mailto:${contact.email}`" variant="soft") Email
@@ -54,7 +54,6 @@ section
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
 import type { AboutContent, AboutCta, AboutContact, AboutSocialLink } from '~/types/about'
 
 const { siteDescription, absoluteUrl, defaultImage } = useSiteMeta()
@@ -70,7 +69,7 @@ type NormalizedSkillSection = {
   items: string[]
 }
 
-const about = computed<AboutContent | null>(() => aboutData.value)
+const about = computed<AboutContent | null>(() => aboutData.value ?? null)
 
 const name = computed(() => about.value?.name ?? 'Jose Martin Ruiz Rico')
 const headline = computed(() => about.value?.headline ?? 'Senior Frontend Engineer & Vue/Nuxt Specialist')

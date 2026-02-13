@@ -10,12 +10,14 @@ links: [
 ]
 ---
 
-<Grid cols="1" :md="2" :lg="2">
+<Grid :cols="1" :md="2" :lg="2">
   <Card title="Overview">
-    Delivered a bespoke CRM for coaching organizations, combining Laravel APIs and a Vue SPA to centralize client records, session history, and progress tracking in one admin hub.
+    <div class="flex flex-col gap-4">
+      <p>Delivered a bespoke CRM for coaching organizations, combining Laravel APIs and a Vue SPA to centralize client records, session history, and progress tracking in one admin hub.</p>
+    </div>
   </Card>
   <Card title="Highlights">
-    <ul>
+    <ul class="flex flex-col gap-4 list-disc">
       <li>Designed a role-based CMS so coaches, admins, and finance teams each have tailored dashboards and permissions.</li>
       <li>Automated session scheduling, reminders, and note sharing to keep coaches and clients in sync.</li>
       <li>Rolled up engagement analytics and exports to simplify reporting back to leadership.</li>

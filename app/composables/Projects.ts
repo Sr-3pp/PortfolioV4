@@ -1,9 +1,8 @@
-import type { ParsedContent } from '@nuxt/content/dist/runtime/types'
-import type { ProjectType } from '~/types/project'
+import type { ProjectDocument, ProjectType } from '~/types/project'
 
 const projectTypes: ProjectType[] = ['fulltime', 'contractor', 'freelance']
 
-const createBuckets = (): Record<ProjectType, ParsedContent[]> => ({
+const createBuckets = (): Record<ProjectType, ProjectDocument[]> => ({
   fulltime: [],
   contractor: [],
   freelance: []
@@ -14,20 +13,21 @@ const resolveProjectType = (rawType: unknown): ProjectType => {
   return projectTypes.includes(normalized) ? normalized : 'freelance'
 }
 
-const sortProjects = (entries: ParsedContent[]) =>
+const sortProjects = (entries: ProjectDocument[]) =>
   entries.sort((left, right) => String(left.title ?? '').localeCompare(String(right.title ?? '')))
 
 const createProjectKey = (type: string, slug: string) => `project-${type}-${slug}`
 
 export const useProjects = () => {
   const getProjects = async () => {
-    const { data } = await useAsyncData<ParsedContent[] | null>('projects', () =>
+    const { data } = await useAsyncData('projects', () =>
       queryCollection('content').where('path', 'LIKE', '%projects%').all()
     )
 
     const buckets = createBuckets()
+    const entries = Array.isArray(data.value) ? (data.value as ProjectDocument[]) : []
 
-    for (const item of data.value ?? []) {
+    for (const item of entries) {
       const type = resolveProjectType(item.meta?.type)
       buckets[type].push(item)
     }
@@ -45,7 +45,7 @@ export const useProjects = () => {
       return null
     }
 
-    const { data } = await useAsyncData<ParsedContent | null>(
+    const { data } = await useAsyncData(
       createProjectKey(normalizedType, normalizedSlug),
       () =>
         queryCollection('content')
@@ -53,7 +53,7 @@ export const useProjects = () => {
           .first()
     )
 
-    return data.value ?? null
+    return (data.value as ProjectDocument | null | undefined) ?? null
   }
 
   return {

@@ -10,12 +10,14 @@ links: [
 ]
 ---
 
-<Grid cols="1" :md="2" :lg="2">
+<Grid :cols="1" :md="2" :lg="2">
   <Card title="Overview">
-    Supported corporate sites with updates, content accuracy, and routine fixes as a Webmaster Jr.
+    <div class="flex flex-col gap-4">
+      <p>Supported corporate sites with updates, content accuracy, and routine fixes as a Webmaster Jr.</p>
+    </div>
   </Card>
   <Card title="Highlights">
-    <ul>
+    <ul class="flex flex-col gap-4 list-disc">
       <li>Maintained and updated corporate websites.</li>
       <li>Assisted with technical fixes and site enhancements.</li>
       <li>Ensured consistent uptime and content accuracy.</li>

@@ -10,12 +10,14 @@ links: [
 ]
 ---
 
-<Grid cols="1" :md="2" :lg="2">
+<Grid :cols="1" :md="2" :lg="2">
   <Card title="Overview">
-    Contract frontend development for the Prism application with a focus on responsive UIs, theme customization, and accessibility.
+    <div class="flex flex-col gap-4">
+      <p>Contract frontend development for the Prism application with a focus on responsive UIs, theme customization, and accessibility.</p>
+    </div>
   </Card>
   <Card title="Highlights">
-    <ul>
+    <ul class="flex flex-col gap-4 list-disc">
       <li>Developed responsive React interfaces for the Prism application.</li>
       <li>Customized themes and ensured accessibility.</li>
     </ul>

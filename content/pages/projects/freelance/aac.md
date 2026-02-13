@@ -10,12 +10,14 @@ links: [
 ]
 ---
 
-<Grid cols="1" :md="2" :lg="2">
+<Grid :cols="1" :md="2" :lg="2">
   <Card title="Overview">
-    Launched a Nuxt 2 + MongoDB catalog experience tailored for premium cabinetry, then layered on a custom admin so non-technical staff could stage launches and keep product data clean.
+    <div class="flex flex-col gap-4">
+      <p>Launched a Nuxt 2 + MongoDB catalog experience tailored for premium cabinetry, then layered on a custom admin so non-technical staff could stage launches and keep product data clean.</p>
+    </div>
   </Card>
   <Card title="Highlights">
-    <ul>
+    <ul class="flex flex-col gap-4 list-disc">
       <li>Modeled a modular CMS to manage product lines, finishes, and gallery assets from a single admin view.</li>
       <li>Built CSV-powered bulk updates so the team can refresh pricing and inventory in minutes.</li>
       <li>Connected lead capture forms to the client’s CRM and analytics stack to measure demand.</li>

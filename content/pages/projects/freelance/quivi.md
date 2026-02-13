@@ -1,7 +1,7 @@
 ---
 type: freelance
 title: Quivi
-description: Built a high-volume autoparts e-commerce with a custom CMS and ultra-fast bulk ingestion so the client can publish fresh content and sync a million-product catalog in under a minute.
+description: Built and scaled a high‑volume autoparts e‑commerce platform, including a custom CMS and a high‑performance ingestion pipeline capable of processing million‑product catalogs in under a minute.
 technologies: [Nuxt 2, Nuxt 3, Vue.js, TypeScript, Django REST, Python]
 role: Full Stack Developer
 period: 2020 – 2021
@@ -10,19 +10,22 @@ links: [
 ]
 ---
 
-<Grid cols="1" :md="2" :lg="2">
+<Grid :cols="1" :md="2" :lg="2">
   <Card title="Overview">
-    Delivered a modern autoparts marketplace, starting with Nuxt 2 + Django REST and later rebuilding everything in Nuxt to remove backend overhead, streamline deployments, and speed up iteration.
+    <div class="flex flex-col gap-4">
+      <p>Developed a large‑scale autoparts e‑commerce platform, initially built with Nuxt 2 and Django REST, and later re‑architected into a Nuxt‑centric stack to simplify deployments, reduce backend complexity, and accelerate feature delivery. The platform handled high‑volume catalogs, complex fitment logic, and frequent content updates.</p>
+    </div>
   </Card>
   <Card title="Highlights">
-    <ul>
-      <li>Designed a custom CMS so the client can edit landing pages, promotions, and SEO assets without developer help.</li>
-      <li>Implemented a CSV-powered ingestion flow capable of validating and importing over one million products in under a minute.</li>
-      <li>Optimized catalog browsing with server-side search, caching, and dynamic filtering tailored for complex autoparts fitment rules.</li>
+    <ul class="flex flex-col gap-4 list-disc">
+      <li>Architected a custom CMS that allowed non‑technical staff to manage landing pages, promotions, and SEO content.</li>
+      <li>Built a high‑performance CSV ingestion pipeline capable of validating and importing over one million products in under a minute.</li>
+      <li>Implemented server‑side search, caching strategies, and dynamic filtering for complex autoparts fitment scenarios.</li>
+      <li>Optimized deployment workflows and reduced backend overhead by migrating to a Nuxt‑centric architecture.</li>
     </ul>
   </Card>
 </Grid>
 
 <Card title="My Role">
-  Led architecture, frontend, and deployment work: set up Nuxt modules, wrote the TypeScript data layer, orchestrated background jobs for product imports, and coached the client team on day-to-day CMS operations.
+  Owned the end‑to‑end technical architecture: designed the frontend system in Nuxt, implemented the TypeScript data layer, built background jobs for large‑scale product imports, integrated backend services, and guided the client team on CMS workflows and deployment processes.
 </Card>
