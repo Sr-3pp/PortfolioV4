@@ -77,15 +77,10 @@ const name = computed(() => about.value?.name ?? legacyMeta.value?.name ?? 'Jose
 const headline = computed(() => about.value?.headline ?? legacyMeta.value?.headline ?? 'Senior Frontend Engineer & Vue/Nuxt Specialist')
 const avatar = computed(() => about.value?.avatar ?? legacyMeta.value?.avatar ?? '/img/3pp.webp')
 
-const defaultContact: Required<AboutContact> = {
-  website: 'https://sr3pp.dev',
-  linkedin: 'https://linkedin.com/in/sr3pp',
-  email: 'martin.ru@outlook.com'
-}
-
 const contact = computed<Required<AboutContact>>(() => ({
-  ...defaultContact,
-  ...(about.value?.contact ?? legacyMeta.value?.contact ?? {})
+  website: about.value?.contact?.website ?? legacyMeta.value?.contact?.website ?? '',
+  linkedin: about.value?.contact?.linkedin ?? legacyMeta.value?.contact?.linkedin ?? '',
+  email: about.value?.contact?.email ?? legacyMeta.value?.contact?.email ?? ''
 }))
 
 const skills = computed<NormalizedSkillSection[]>(() => {
