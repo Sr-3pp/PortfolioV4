@@ -74,6 +74,6 @@ cta:
   description: "Explore a curated set of projects I’ve worked on across different engagement types."
   buttonLabel: "Browse projects"
 ---
-Frontend-focused full stack developer with 10+ years of experience. Certified Senior Vue Developer, with deep expertise in Vue, Nuxt, and modern web tooling. Known for building modular, scalable, and performant applications across diverse industries like banking, travel, and e-commerce.
+Frontend-focused Full-Stack developer with 10+ years of experience. Certified Senior Vue Developer, with deep expertise in Vue, Nuxt, and modern web tooling. Known for building modular, scalable, and performant applications across diverse industries like banking, travel, and e-commerce.
 
 Much of my day-to-day revolves around front-end architecture: leading component libraries, shaping design systems, and shipping production-ready interfaces that balance accessibility, performance, and brand expression. I pair that with a product mindset—partnering with designers, PMs, and stakeholders to translate product vision into fast, maintainable front-end experiences.
