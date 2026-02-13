@@ -2,6 +2,10 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  sourcemap: {
+    client: false,
+    server: false
+  },
 
   css: ['@/assets/css/main.css'],
   modules: [
