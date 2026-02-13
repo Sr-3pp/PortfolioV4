@@ -67,7 +67,19 @@ export default defineNuxtConfig({
     externals: {
       external: ['better-sqlite3']
     }
-  }, 
+  },
+  routeRules: {
+    '/__nuxt_studio/**': {
+      headers: {
+        'cache-control': 'no-store, no-cache, must-revalidate'
+      }
+    },
+    '/__nuxt_content/**': {
+      headers: {
+        'cache-control': 'no-store, no-cache, must-revalidate'
+      }
+    }
+  },
   studio: {
     route: '/studio',
     repository: {
