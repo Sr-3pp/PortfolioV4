@@ -79,6 +79,7 @@ import type { CvData, CvDocument, DateLike } from '~/types/cv'
 const { open } = useUiOverlay('resume')
 
 const { data } = await useAsyncData<CvDocument>('cv', () => queryCollection('cv').first())
+const PRINT_MODE_CLASS = 'print-resume-only'
 
 type CvRecord = Record<string, unknown>
 
@@ -157,8 +158,25 @@ const normalizeCv = (doc: CvDocument | null | undefined): CvData => {
 
 const cv = computed<CvData>(() => normalizeCv(data.value))
 
+const clearPrintMode = () => {
+  if (!import.meta.client) return
+  document.documentElement.classList.remove(PRINT_MODE_CLASS)
+}
+
 const printCv = () => {
-  if (import.meta.client) window.print()
+  if (!import.meta.client) return
+
+  const cleanup = () => {
+    clearPrintMode()
+    window.removeEventListener('afterprint', cleanup)
+  }
+
+  document.documentElement.classList.add(PRINT_MODE_CLASS)
+  window.addEventListener('afterprint', cleanup)
+
+  requestAnimationFrame(() => {
+    window.print()
+  })
 }
 
 const shortUrl = (url: string) => {
@@ -206,29 +224,75 @@ const templateBindings = {
 };
 
 void templateBindings;
+
+onUnmounted(() => {
+  clearPrintMode()
+})
 </script>
 
 <style>
 @media print {
-  body * { visibility: hidden !important; }
+  html.print-resume-only,
+  html.print-resume-only body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
 
-  [data-vaul-overlay] { display: none !important; }
+  html.print-resume-only body > * {
+    display: none !important;
+  }
 
-  [data-vaul-drawer] {
+  html.print-resume-only body > *:has(.cv-print) {
+    display: block !important;
+  }
+
+  html.print-resume-only [data-vaul-overlay] {
+    display: none !important;
+  }
+
+  html.print-resume-only [data-vaul-drawer] {
     visibility: visible !important;
     position: static !important;
     inset: auto !important;
     transform: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
     width: 100% !important;
     max-width: none !important;
-    background: white !important;
+    background: transparent !important;
     box-shadow: none !important;
     border: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
-  [data-vaul-drawer] * { visibility: visible !important; }
+  html.print-resume-only [data-vaul-drawer]::before,
+  html.print-resume-only [data-vaul-drawer]::after {
+    display: none !important;
+    content: none !important;
+  }
 
-  .cv-print {
+  html.print-resume-only [data-vaul-drawer] > * {
+    background: transparent !important;
+    box-shadow: none !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+  }
+
+  html.print-resume-only [data-vaul-drawer] > * {
+    display: none !important;
+  }
+
+  html.print-resume-only [data-vaul-drawer] > *:has(.cv-print) {
+    display: block !important;
+  }
+
+  html.print-resume-only .cv-print {
     visibility: visible !important;
     max-width: none !important;
     margin: 0 !important;
@@ -236,16 +300,18 @@ void templateBindings;
     border-radius: 0 !important;
     box-shadow: none !important;
     background: white !important;
+    min-height: auto !important;
+    break-inside: avoid-page;
   }
 
-  .cv-print * { visibility: visible !important; }
+  html.print-resume-only .cv-print * { visibility: visible !important; }
 
-  .cv-print .ubutton,
-  .cv-print button {
+  html.print-resume-only .cv-print .ubutton,
+  html.print-resume-only .cv-print button {
     display: none !important;
   }
 
-  .cv-print a {
+  html.print-resume-only .cv-print a {
     color: #111827 !important;
     text-decoration: none !important;
   }
