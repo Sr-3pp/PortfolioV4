@@ -1,7 +1,6 @@
 import { promises as fs } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { defineEventHandler, getRequestURL, setHeader } from 'h3'
-import { withoutTrailingSlash, withLeadingSlash } from 'ufo'
 import { useRuntimeConfig } from '#imports'
 
 type SitemapEntry = {
@@ -12,6 +11,15 @@ type SitemapEntry = {
 const PROJECT_TYPES = ['fulltime', 'contractor', 'freelance'] as const
 
 const toIsoString = (date: Date | undefined) => (date ? date.toISOString() : undefined)
+const withoutTrailingSlash = (value: string) => value.replace(/\/+$/, '')
+const withLeadingSlash = (value: string) => (value.startsWith('/') ? value : `/${value}`)
+const escapeXml = (value: string) =>
+  value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&apos;')
 
 const buildAbsoluteUrl = (path: string, base: string) => {
   try {
@@ -22,7 +30,7 @@ const buildAbsoluteUrl = (path: string, base: string) => {
 }
 
 const gatherProjectRoutes = async () => {
-  const contentRoot = resolve(process.cwd(), 'content/projects')
+  const contentRoot = resolve(process.cwd(), 'content/pages/projects')
   const entries: SitemapEntry[] = []
 
   await Promise.all(
@@ -48,7 +56,7 @@ const gatherProjectRoutes = async () => {
     })
   )
 
-  return entries
+  return entries.sort((a, b) => a.loc.localeCompare(b.loc))
 }
 
 export default defineEventHandler(async (event) => {
@@ -67,13 +75,14 @@ export default defineEventHandler(async (event) => {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ...urls.map((entry) => {
-      const loc = buildAbsoluteUrl(entry.loc, siteUrl)
-      const lastmod = entry.lastmod ? `<lastmod>${entry.lastmod}</lastmod>` : ''
+      const loc = escapeXml(buildAbsoluteUrl(entry.loc, siteUrl))
+      const lastmod = entry.lastmod ? `<lastmod>${escapeXml(entry.lastmod)}</lastmod>` : ''
       return `<url><loc>${loc}</loc>${lastmod}</url>`
     }),
     '</urlset>'
   ].join('')
 
-  setHeader(event, 'Content-Type', 'application/xml')
+  setHeader(event, 'Content-Type', 'application/xml; charset=utf-8')
+  setHeader(event, 'Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
   return body
 })
