@@ -1,15 +1,16 @@
 import type { Certificate, CertificateDocument } from '~/types/certificate'
 
 const normalizeCertificate = (doc: CertificateDocument): Certificate | null => {
-  const source = doc.meta ?? doc
-  if (!source?.name) return null
+  const meta = doc.meta ?? {}
+  const name = meta.name ?? doc.name
+  if (!name) return null
 
   return {
-    name: source.name,
-    issuer: source.issuer ?? null,
-    link: source.link ?? null,
-    thumbnail: source.thumbnail ?? null,
-    summary: source.summary ?? null
+    name,
+    issuer: meta.issuer ?? doc.issuer ?? null,
+    link: meta.link ?? doc.link ?? null,
+    thumbnail: meta.thumbnail ?? doc.thumbnail ?? null,
+    summary: meta.summary ?? doc.summary ?? null
   }
 }
 

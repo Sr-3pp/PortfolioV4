@@ -18,6 +18,17 @@ export interface ProjectMeta {
   cover?: string
 }
 
+export interface ProjectListItem {
+  path: string
+  title?: string
+  description?: string
+  meta?: Pick<ProjectMeta, 'type' | 'technologies'>
+}
+
+export type ProjectBuckets<T> = Record<ProjectType, T[]>
+export type ProjectSearchIndex = Record<string, string>
+export type ProjectTypeLabelMap = Record<ProjectType, string>
+
 export interface ProjectContent {
   title?: string
   description?: string

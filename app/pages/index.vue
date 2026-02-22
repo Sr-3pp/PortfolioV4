@@ -4,6 +4,7 @@ div(aria-hidden="true")
 
 <script lang="ts" setup>
 import { computed } from 'vue'
+import type { JsonLdHeadScript } from '~/types/seo'
 
 const { siteDescription, defaultImage, absoluteUrl } = useSiteMeta()
 
@@ -58,14 +59,16 @@ const personSchema = computed(() => ({
   }
 }))
 
+const jsonLdScripts: JsonLdHeadScript[] = [
+  {
+    key: 'ld-person',
+    type: 'application/ld+json',
+    children: personSchema
+  }
+]
+
 useHead({
-  script: [
-    {
-      key: 'ld-person',
-      type: 'application/ld+json',
-      children: personSchema
-    }
-  ]
+  script: jsonLdScripts
 })
 </script>
 

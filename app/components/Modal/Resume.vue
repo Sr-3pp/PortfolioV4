@@ -80,7 +80,82 @@ const { open } = useUiOverlay('resume')
 
 const { data } = await useAsyncData<CvDocument>('cv', () => queryCollection('cv').first())
 
-const cv = computed<CvData>(() => data.value?.meta ?? {})
+type CvRecord = Record<string, unknown>
+
+const asRecord = (value: unknown): CvRecord => (value && typeof value === 'object' ? (value as CvRecord) : {})
+const asString = (value: unknown): string | null => (typeof value === 'string' ? value : null)
+const asStringList = (value: unknown): string[] =>
+  Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
+
+const normalizeCv = (doc: CvDocument | null | undefined): CvData => {
+  const root = asRecord(doc)
+  const meta = asRecord(root.meta)
+
+  const pick = (key: string) => meta[key] ?? root[key]
+  const pickList = (...keys: string[]) => {
+    for (const key of keys) {
+      const value = pick(key)
+      if (Array.isArray(value)) return value
+    }
+    return []
+  }
+
+  const contactRaw = asRecord(pick('contact'))
+  const skillsRaw = asRecord(pick('skills'))
+
+  const experience = pickList('experience').map((item) => {
+    const row = asRecord(item)
+    return {
+      company: asString(row.company),
+      role: asString(row.role),
+      start_date: (row.start_date ?? row.startDate ?? null) as DateLike,
+      end_date: (row.end_date ?? row.endDate ?? null) as DateLike,
+      highlights: asStringList(row.highlights)
+    }
+  })
+
+  const freelanceProjects = pickList('freelance_projects', 'freelancePreojects').map((item) => {
+    const row = asRecord(item)
+    return {
+      name: asString(row.name),
+      description: asString(row.description),
+      link: asString(row.link)
+    }
+  })
+
+  const education = pickList('education').map((item) => {
+    const row = asRecord(item)
+    return {
+      program: asString(row.program),
+      institution: asString(row.institution),
+      start_year: typeof row.start_year === 'number' ? row.start_year : (typeof row.startDate === 'number' ? row.startDate : null),
+      end_year: typeof row.end_year === 'number' ? row.end_year : (typeof row.endDate === 'number' ? row.endDate : null)
+    }
+  })
+
+  return {
+    name: asString(pick('name')),
+    title: asString(pick('title')),
+    contact: {
+      website: asString(contactRaw.website),
+      linkedin: asString(contactRaw.linkedin),
+      email: asString(contactRaw.email)
+    },
+    profile: asString(pick('profile')),
+    experience,
+    freelance_projects: freelanceProjects,
+    education,
+    skills: {
+      frontend: asStringList(skillsRaw.frontend),
+      backend: asStringList(skillsRaw.backend),
+      tools: asStringList(skillsRaw.tools),
+      languages: asStringList(skillsRaw.languages)
+    },
+    source: asString(pick('source'))
+  }
+}
+
+const cv = computed<CvData>(() => normalizeCv(data.value))
 
 const printCv = () => {
   if (import.meta.client) window.print()
@@ -135,21 +210,45 @@ void templateBindings;
 
 <style>
 @media print {
-  body * { visibility: hidden !important; overflow: visible !important; height: auto !important; transform: inherit !important;}
+  body * { visibility: hidden !important; }
 
-  body #__nuxt {
-    position: absolute !important;
-  }
+  [data-vaul-overlay] { display: none !important; }
 
-  body [data-vaul-drawer]{
+  [data-vaul-drawer] {
+    visibility: visible !important;
     position: static !important;
+    inset: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: none !important;
+    background: white !important;
+    box-shadow: none !important;
+    border: 0 !important;
   }
 
-  .cv-print, .cv-print * { visibility: visible !important; }
+  [data-vaul-drawer] * { visibility: visible !important; }
 
-  html:has(.cv-print), body:has(.cv-print), body *:has(.cv-print) { visibility: visible !important; }
+  .cv-print {
+    visibility: visible !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: white !important;
+  }
 
-  .cv-print { position: static !important; inset: auto !important; box-shadow: none !important; background: white !important;}
+  .cv-print * { visibility: visible !important; }
+
+  .cv-print .ubutton,
+  .cv-print button {
+    display: none !important;
+  }
+
+  .cv-print a {
+    color: #111827 !important;
+    text-decoration: none !important;
+  }
 
   @page { margin: 6mm; }
 }

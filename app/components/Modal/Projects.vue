@@ -37,7 +37,7 @@ UDrawer.modal-projects(v-model:open="open" description="Hand-picked case studies
 </template>
 
 <script lang="ts" setup>
-import type { ProjectDocument, ProjectType } from '~/types/project'
+import type { ProjectBuckets, ProjectListItem, ProjectSearchIndex, ProjectType, ProjectTypeLabelMap } from '~/types/project'
 
 const { open, closeOverlay } = useUiOverlay('projects')
 const { getProjects } = useProjects()
@@ -48,25 +48,25 @@ const debounceHandle = ref<number | null>(null)
 const isLoadingProjects = ref(false)
 const hasLoadedProjects = ref(false)
 const projectTypes: ProjectType[] = ['fulltime', 'contractor', 'freelance']
-const projectTypeLabels: Record<ProjectType, string> = {
+const projectTypeLabels: ProjectTypeLabelMap = {
   fulltime: 'Fulltime',
   contractor: 'Contractor',
   freelance: 'Freelance'
 }
 
-const createEmptyProjectBuckets = (): Record<ProjectType, ProjectDocument[]> => ({
+const createEmptyProjectBuckets = (): ProjectBuckets<ProjectListItem> => ({
   fulltime: [],
   contractor: [],
   freelance: []
 })
 
-const projects = ref<Record<ProjectType, ProjectDocument[]>>(createEmptyProjectBuckets())
-const projectSearchIndex = ref<Record<string, string>>({})
+const projects = ref<ProjectBuckets<ProjectListItem>>(createEmptyProjectBuckets())
+const projectSearchIndex = ref<ProjectSearchIndex>({})
 
-const setProjects = (value: Record<ProjectType, ProjectDocument[]>) => {
+const setProjects = (value: ProjectBuckets<ProjectListItem>) => {
   projects.value = value
 
-  const nextIndex: Record<string, string> = {}
+  const nextIndex: ProjectSearchIndex = {}
   for (const type of projectTypes) {
     for (const project of value[type]) {
       nextIndex[project.path] =
@@ -98,6 +98,20 @@ const tabs = computed(() => [
 ])
 
 const activeTab = ref<ProjectType>('fulltime')
+
+const getProjectsByType = (type: ProjectType): ProjectListItem[] => {
+  const buckets = projects.value
+
+  switch (type) {
+    case 'fulltime':
+      return buckets.fulltime
+    case 'contractor':
+      return buckets.contractor
+    case 'freelance':
+    default:
+      return buckets.freelance
+  }
+}
 
 watch(
   query,
@@ -134,14 +148,20 @@ watch(
   { immediate: true }
 )
 
-const filterProjects = (type: ProjectType) => {
+const filterProjects = (type: ProjectType): ProjectListItem[] => {
   const normalizedQuery = debouncedQuery.value.trim().toLowerCase()
-  const list = projects.value[type]
+  const list = getProjectsByType(type)
   if (!normalizedQuery) return list
-  return list.filter((project) => {
+
+  const filtered: ProjectListItem[] = []
+  for (const project of list) {
     const haystack = projectSearchIndex.value[project.path] ?? ''
-    return haystack.includes(normalizedQuery)
-  })
+    if (haystack.includes(normalizedQuery)) {
+      filtered.push(project)
+    }
+  }
+
+  return filtered
 }
 
 const visibleProjects = computed(() => filterProjects(activeTab.value))

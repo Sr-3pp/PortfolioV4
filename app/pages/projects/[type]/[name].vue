@@ -49,6 +49,7 @@ section
 <script lang="ts" setup>
 import { computed } from 'vue'
 import type { ProjectContent } from '~/types/project'
+import type { JsonLdHeadScript } from '~/types/seo'
 
 const { getProjectBySlug } = useProjects()
 const route = useRoute()
@@ -160,7 +161,7 @@ const projectSchema = computed(() => {
 })
 
 useHead(() => {
-  const scripts: Array<Record<string, string>> = []
+  const scripts: JsonLdHeadScript[] = []
 
   const projectJson = projectSchema.value
   if (projectJson) {

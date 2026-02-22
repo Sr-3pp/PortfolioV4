@@ -36,20 +36,20 @@ export default defineContentConfig({
         experience: z.array(z.object({
           company: z.string(),
           role: z.string(),
-          startDate: z.string(),
-          endDate: z.string().optional(),
+          start_date: z.string(),
+          end_date: z.string().nullable().optional(),
           highlights: z.array(z.string())
         })),
-        freelancePreojects: z.array(z.object({
+        freelance_projects: z.array(z.object({
           name: z.string(),
           description: z.string(),
           link: z.string().optional(),
         })).optional(),
         education: z.array(z.object({
           program: z.string(),
-          institution: z.string(),
-          startDate: z.string(),
-          endDate: z.string().optional(),
+          institution: z.string().nullable().optional(),
+          start_year: z.number(),
+          end_year: z.number().nullable().optional(),
         })).optional(),
         skills: z.object({
           frontend: z.array(z.string()),

@@ -1,3 +1,8 @@
+import type { Expense, RecurringExpense } from '~/types/db'
+
+export type ExpenseAdminView = 'expenses' | 'recurring'
+export type ExpenseFrequency = 'monthly' | 'yearly'
+
 /**
  * Form interface for creating/editing expenses
  * Combines fields for both one-time and recurring expenses
@@ -8,7 +13,7 @@ export interface ExpenseFormData {
   method: string
   note: string
   isRecurring: boolean
-  frequency: 'monthly' | 'yearly'
+  frequency: ExpenseFrequency
   interval: number
   startDate: string
   endDate: string
@@ -40,7 +45,22 @@ export const FREQUENCY_OPTIONS = [
 /**
  * Helper type for SelectMenu items
  */
-export interface SelectMenuItem {
+export interface SelectMenuItem<T = string> {
   label: string
-  value: string
+  value: T
+}
+
+export interface ExpenseSummaryTotals {
+  expenses: number
+  recurring: number
+  combined: number
+}
+
+export interface ExpenseSummaryResponse {
+  success: boolean
+  month: number
+  year: number
+  totals: ExpenseSummaryTotals
+  expenses: Expense[]
+  recurring: RecurringExpense[]
 }

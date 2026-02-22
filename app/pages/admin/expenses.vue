@@ -126,16 +126,17 @@ ExpenseCreateForm(
 
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
+import type { ExpenseAdminView, ExpenseSummaryResponse, SelectMenuItem } from '~/types/expense'
+import type { TableSortingState } from '~/types/table'
 
 definePageMeta({})
 
-const view = ref<'expenses' | 'recurring'>('expenses')
+const view = ref<ExpenseAdminView>('expenses')
 const page = ref(1)
 const pageSize = 20
 
 // Table sorting state (TanStack format). Default: createdAt desc.
-type SortingState = Array<{ id: string; desc?: boolean }>
-const sorting = ref<SortingState>([{ id: 'createdAt', desc: true }])
+const sorting = ref<TableSortingState>([{ id: 'createdAt', desc: true }])
 
 const filters = reactive({
   query: '',
@@ -181,7 +182,7 @@ const monthOptions = [
 // Year options (current year ± 5 years)
 const yearOptions = computed(() => {
   const currentYear = now.getFullYear()
-  const years: Array<{ label: string; value: number }> = []
+  const years: SelectMenuItem<number>[] = []
   for (let i = currentYear - 5; i <= currentYear + 1; i++) {
     years.push({ label: String(i), value: i })
   }
@@ -192,7 +193,7 @@ const yearOptions = computed(() => {
 const queryString = computed(() => `month=${selectedMonth.value}&year=${selectedYear.value}`)
 
 // Fetch summary data
-const { data: summary, pending, error, refresh } = useFetch<any>(
+const { data: summary, pending, error, refresh } = useFetch<ExpenseSummaryResponse>(
   () => `/api/expense/summary?${queryString.value}`,
   {
     server: false,
@@ -234,13 +235,13 @@ const { categoryOptions, methodOptions, categories, methods } = useExpenseFilter
  */
 const toItems = (list: unknown) => {
   const arr = Array.isArray(list) ? list : []
-  return arr.map((o: any) => typeof o === 'string'
+  return arr.map((o: any): SelectMenuItem<string> => typeof o === 'string'
     ? ({ label: o, value: o })
-    : ({ label: o?.label ?? String(o?.value ?? ''), value: o?.value }))
+    : ({ label: String(o?.label ?? o?.value ?? ''), value: String(o?.value ?? '') }))
 }
 
 // Add an explicit "All" option (value: undefined) if not already present
-const ensureAllOption = (items: Array<{ label: string, value: any }>, label = 'All') => {
+function ensureAllOption<T>(items: SelectMenuItem<T>[], label = 'All'): SelectMenuItem<T | undefined>[] {
   const hasUndefined = items.some(i => i.value === undefined)
   return hasUndefined ? items : [{ label, value: undefined }, ...items]
 }
@@ -360,7 +361,7 @@ const recurringCols = [
 ]
 
 // Helpers / events
-function switchView(v: 'expenses' | 'recurring') {
+function switchView(v: ExpenseAdminView) {
   view.value = v
   page.value = 1 // reset pagination when switching tabs
 }

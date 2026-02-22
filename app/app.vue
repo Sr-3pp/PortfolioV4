@@ -16,8 +16,12 @@
 </template>
 
 <script setup lang="ts">
+	import type { Ref } from 'vue'
 	import { Analytics } from '@vercel/analytics/nuxt';
 	import { SpeedInsights } from "@vercel/speed-insights/nuxt"
+
+  // Preload certificate data into the shared async-data cache so the lazy modal has content on first open.
+  await useAsyncData('certificates', () => queryCollection('certificates').all())
 
   const certsOverlay = useUiOverlay('certificates')
   const projectsOverlay = useUiOverlay('projects')
