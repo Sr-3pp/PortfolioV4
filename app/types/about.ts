@@ -35,6 +35,26 @@ export interface AboutMeta {
   socials?: AboutSocialLink[]
 }
 
+export interface AboutStats {
+  projectCount: number
+  certificateCount: number
+}
+
+export type LegacyAboutMeta = AboutMeta &
+  Partial<
+    Pick<
+      AboutContent,
+      'name' | 'headline' | 'avatar' | 'contact' | 'skills' | 'experienceStartYear' | 'experienceNote'
+    >
+  >
+
+export interface NormalizedAboutSkillSection {
+  key: string
+  title: string
+  subtitle: string
+  items: string[]
+}
+
 export interface AboutContent extends ContentCollectionItem {
   name?: string
   headline?: string

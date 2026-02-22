@@ -79,11 +79,104 @@ import type { CvData, CvDocument, DateLike } from '~/types/cv'
 const { open } = useUiOverlay('resume')
 
 const { data } = await useAsyncData<CvDocument>('cv', () => queryCollection('cv').first())
+const PRINT_MODE_CLASS = 'print-resume-only'
 
-const cv = computed<CvData>(() => data.value?.meta ?? {})
+type CvRecord = Record<string, unknown>
+
+const asRecord = (value: unknown): CvRecord => (value && typeof value === 'object' ? (value as CvRecord) : {})
+const asString = (value: unknown): string | null => (typeof value === 'string' ? value : null)
+const asStringList = (value: unknown): string[] =>
+  Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
+
+const normalizeCv = (doc: CvDocument | null | undefined): CvData => {
+  const root = asRecord(doc)
+  const meta = asRecord(root.meta)
+
+  const pick = (key: string) => meta[key] ?? root[key]
+  const pickList = (...keys: string[]) => {
+    for (const key of keys) {
+      const value = pick(key)
+      if (Array.isArray(value)) return value
+    }
+    return []
+  }
+
+  const contactRaw = asRecord(pick('contact'))
+  const skillsRaw = asRecord(pick('skills'))
+
+  const experience = pickList('experience').map((item) => {
+    const row = asRecord(item)
+    return {
+      company: asString(row.company),
+      role: asString(row.role),
+      start_date: (row.start_date ?? row.startDate ?? null) as DateLike,
+      end_date: (row.end_date ?? row.endDate ?? null) as DateLike,
+      highlights: asStringList(row.highlights)
+    }
+  })
+
+  const freelanceProjects = pickList('freelance_projects', 'freelancePreojects').map((item) => {
+    const row = asRecord(item)
+    return {
+      name: asString(row.name),
+      description: asString(row.description),
+      link: asString(row.link)
+    }
+  })
+
+  const education = pickList('education').map((item) => {
+    const row = asRecord(item)
+    return {
+      program: asString(row.program),
+      institution: asString(row.institution),
+      start_year: typeof row.start_year === 'number' ? row.start_year : (typeof row.startDate === 'number' ? row.startDate : null),
+      end_year: typeof row.end_year === 'number' ? row.end_year : (typeof row.endDate === 'number' ? row.endDate : null)
+    }
+  })
+
+  return {
+    name: asString(pick('name')),
+    title: asString(pick('title')),
+    contact: {
+      website: asString(contactRaw.website),
+      linkedin: asString(contactRaw.linkedin),
+      email: asString(contactRaw.email)
+    },
+    profile: asString(pick('profile')),
+    experience,
+    freelance_projects: freelanceProjects,
+    education,
+    skills: {
+      frontend: asStringList(skillsRaw.frontend),
+      backend: asStringList(skillsRaw.backend),
+      tools: asStringList(skillsRaw.tools),
+      languages: asStringList(skillsRaw.languages)
+    },
+    source: asString(pick('source'))
+  }
+}
+
+const cv = computed<CvData>(() => normalizeCv(data.value))
+
+const clearPrintMode = () => {
+  if (!import.meta.client) return
+  document.documentElement.classList.remove(PRINT_MODE_CLASS)
+}
 
 const printCv = () => {
-  if (import.meta.client) window.print()
+  if (!import.meta.client) return
+
+  const cleanup = () => {
+    clearPrintMode()
+    window.removeEventListener('afterprint', cleanup)
+  }
+
+  document.documentElement.classList.add(PRINT_MODE_CLASS)
+  window.addEventListener('afterprint', cleanup)
+
+  requestAnimationFrame(() => {
+    window.print()
+  })
 }
 
 const shortUrl = (url: string) => {
@@ -131,25 +224,97 @@ const templateBindings = {
 };
 
 void templateBindings;
+
+onUnmounted(() => {
+  clearPrintMode()
+})
 </script>
 
 <style>
 @media print {
-  body * { visibility: hidden !important; overflow: visible !important; height: auto !important; transform: inherit !important;}
-
-  body #__nuxt {
-    position: absolute !important;
+  html.print-resume-only,
+  html.print-resume-only body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
   }
 
-  body [data-vaul-drawer]{
+  html.print-resume-only body > * {
+    display: none !important;
+  }
+
+  html.print-resume-only body > *:has(.cv-print) {
+    display: block !important;
+  }
+
+  html.print-resume-only [data-vaul-overlay] {
+    display: none !important;
+  }
+
+  html.print-resume-only [data-vaul-drawer] {
+    visibility: visible !important;
     position: static !important;
+    inset: auto !important;
+    transform: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    width: 100% !important;
+    max-width: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
-  .cv-print, .cv-print * { visibility: visible !important; }
+  html.print-resume-only [data-vaul-drawer]::before,
+  html.print-resume-only [data-vaul-drawer]::after {
+    display: none !important;
+    content: none !important;
+  }
 
-  html:has(.cv-print), body:has(.cv-print), body *:has(.cv-print) { visibility: visible !important; }
+  html.print-resume-only [data-vaul-drawer] > * {
+    background: transparent !important;
+    box-shadow: none !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+  }
 
-  .cv-print { position: static !important; inset: auto !important; box-shadow: none !important; background: white !important;}
+  html.print-resume-only [data-vaul-drawer] > * {
+    display: none !important;
+  }
+
+  html.print-resume-only [data-vaul-drawer] > *:has(.cv-print) {
+    display: block !important;
+  }
+
+  html.print-resume-only .cv-print {
+    visibility: visible !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: white !important;
+    min-height: auto !important;
+    break-inside: avoid-page;
+  }
+
+  html.print-resume-only .cv-print * { visibility: visible !important; }
+
+  html.print-resume-only .cv-print .ubutton,
+  html.print-resume-only .cv-print button {
+    display: none !important;
+  }
+
+  html.print-resume-only .cv-print a {
+    color: #111827 !important;
+    text-decoration: none !important;
+  }
 
   @page { margin: 6mm; }
 }

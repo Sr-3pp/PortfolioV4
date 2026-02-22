@@ -1,8 +1,8 @@
-import type { ProjectDocument, ProjectType } from '~/types/project'
+import type { ProjectBuckets, ProjectDocument, ProjectListItem, ProjectType } from '~/types/project'
 
 const projectTypes: ProjectType[] = ['fulltime', 'contractor', 'freelance']
 
-const createBuckets = (): Record<ProjectType, ProjectDocument[]> => ({
+const createBuckets = <T>(): ProjectBuckets<T> => ({
   fulltime: [],
   contractor: [],
   freelance: []
@@ -13,8 +13,37 @@ const resolveProjectType = (rawType: unknown): ProjectType => {
   return projectTypes.includes(normalized) ? normalized : 'freelance'
 }
 
-const sortProjects = (entries: ProjectDocument[]) =>
+const sortProjects = (entries: ProjectListItem[]) =>
   entries.sort((left, right) => String(left.title ?? '').localeCompare(String(right.title ?? '')))
+
+type ProjectListSource = {
+  path?: unknown
+  title?: unknown
+  description?: unknown
+  meta?: {
+    type?: unknown
+    technologies?: unknown
+  } | null
+}
+
+const toProjectListItem = (item: ProjectListSource): ProjectListItem | null => {
+  const path = typeof item.path === 'string' ? item.path : ''
+  if (!path) return null
+
+  const technologies = Array.isArray(item.meta?.technologies)
+    ? item.meta!.technologies.filter((tech): tech is string => typeof tech === 'string')
+    : []
+
+  return {
+    path,
+    title: typeof item.title === 'string' ? item.title : undefined,
+    description: typeof item.description === 'string' ? item.description : undefined,
+    meta: {
+      type: typeof item.meta?.type === 'string' ? item.meta.type : undefined,
+      technologies
+    }
+  }
+}
 
 const createProjectKey = (type: string, slug: string) => `project-${type}-${slug}`
 
@@ -24,12 +53,15 @@ export const useProjects = () => {
       queryCollection('content').where('path', 'LIKE', '%projects%').all()
     )
 
-    const buckets = createBuckets()
-    const entries = Array.isArray(data.value) ? (data.value as ProjectDocument[]) : []
+    const buckets = createBuckets<ProjectListItem>()
+    const entries = Array.isArray(data.value) ? (data.value as ProjectListSource[]) : []
 
     for (const item of entries) {
-      const type = resolveProjectType(item.meta?.type)
-      buckets[type].push(item)
+      const normalized = toProjectListItem(item)
+      if (!normalized) continue
+
+      const type = resolveProjectType(normalized.meta?.type)
+      buckets[type].push(normalized)
     }
 
     projectTypes.forEach((type) => sortProjects(buckets[type]))

@@ -54,7 +54,16 @@ section
 </template>
 
 <script lang="ts" setup>
-import type { AboutContent, AboutCta, AboutContact, AboutMeta, AboutSocialLink } from '~/types/about'
+import type {
+  AboutStats,
+  AboutContent,
+  AboutCta,
+  AboutContact,
+  AboutSocialLink,
+  LegacyAboutMeta,
+  NormalizedAboutSkillSection
+} from '~/types/about'
+import type { JsonLdHeadScript } from '~/types/seo'
 
 const { siteDescription, absoluteUrl, defaultImage } = useSiteMeta()
 
@@ -62,15 +71,7 @@ const { data: aboutData } = await useAsyncData<AboutContent | null>('about', () 
   queryCollection('content').path('/about').first()
 )
 
-type NormalizedSkillSection = {
-  key: string
-  title: string
-  subtitle: string
-  items: string[]
-}
-
 const about = computed<AboutContent | null>(() => aboutData.value ?? null)
-type LegacyAboutMeta = AboutMeta & Partial<Pick<AboutContent, 'name' | 'headline' | 'avatar' | 'contact' | 'skills' | 'experienceStartYear' | 'experienceNote'>>
 const legacyMeta = computed<LegacyAboutMeta | undefined>(() => about.value?.meta as LegacyAboutMeta | undefined)
 
 const name = computed(() => about.value?.name ?? legacyMeta.value?.name ?? 'Jose Martin Ruiz Rico')
@@ -83,7 +84,7 @@ const contact = computed<Required<AboutContact>>(() => ({
   email: about.value?.contact?.email ?? legacyMeta.value?.contact?.email ?? ''
 }))
 
-const skills = computed<NormalizedSkillSection[]>(() => {
+const skills = computed<NormalizedAboutSkillSection[]>(() => {
   const sections = about.value?.skills ?? legacyMeta.value?.skills
   if (!Array.isArray(sections)) return []
   return sections.map((section) => ({
@@ -107,13 +108,25 @@ const experienceNote = computed(
 
 const { data: projectsData } = useNuxtData('projects')
 const { data: certs } = useNuxtData('certificates')
+const { data: aboutStats } = await useAsyncData<AboutStats>('about-stats', async () => {
+  const [projectDocs, certDocs] = await Promise.all([
+    queryCollection('content').where('path', 'LIKE', '%projects%').all(),
+    queryCollection('certificates').all()
+  ])
 
-const projectCount = computed(() => projectsData.value?.length ?? 0)
+  return {
+    projectCount: Array.isArray(projectDocs) ? projectDocs.length : 0,
+    certificateCount: Array.isArray(certDocs) ? certDocs.length : 0
+  }
+})
+
+const projectCount = computed(() => projectsData.value?.length ?? aboutStats.value?.projectCount ?? 0)
 
 const certificateCount = computed(() => {
   if (Array.isArray(certs.value)) return certs.value.length
   const legacyCertificates = certs.value?.meta?.certificates
-  return Array.isArray(legacyCertificates) ? legacyCertificates.length : 0
+  if (Array.isArray(legacyCertificates)) return legacyCertificates.length
+  return aboutStats.value?.certificateCount ?? 0
 })
 
 const socials = computed<AboutSocialLink[]>(() => {
@@ -202,8 +215,8 @@ const aboutSchema = computed(() => ({
   }
 }))
 
-useHead(() => ({
-  script: [
+useHead(() => {
+  const scripts: JsonLdHeadScript[] = [
     {
       key: 'ld-about',
       type: 'application/ld+json',
@@ -215,7 +228,11 @@ useHead(() => ({
       children: JSON.stringify(breadcrumbSchema.value)
     }
   ]
-}))
+
+  return {
+    script: scripts
+  }
+})
 
 const templateBindings = {
   contact,
@@ -224,6 +241,7 @@ const templateBindings = {
   experienceNote,
   projectCount,
   certificateCount,
+  aboutStats,
   openProjects,
   socials,
   about,

@@ -69,6 +69,10 @@ export default defineNuxtConfig({
     }
   },
   routeRules: {
+    '/': { swr: 3600 },
+    '/about': { swr: 3600 },
+    '/projects/**': { swr: 3600 },
+    '/sitemap.xml': { swr: 3600 },
     '/__nuxt_studio/**': {
       headers: {
         'cache-control': 'no-store, no-cache, must-revalidate'

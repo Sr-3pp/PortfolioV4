@@ -2,6 +2,9 @@
 UModal.modal-certificates(v-model:open="open" description="My credentials")
   template(#title) My Certificates
   template(#body)
+    div(v-if="isLoading" class="py-8 text-sm text-white/60") Loading certificates...
+    div(v-else-if="loadError" class="py-8 text-sm text-red-300") Failed to load certificates.
+    div(v-else-if="certificates.length === 0" class="py-8 text-sm text-white/60") No certificates found.
     ul(class="grid grid-cols-1 sm:grid-cols-2 gap-4")
       li(v-for="cert in certificates" :key="cert.name")
         UCard(class="h-full")
@@ -19,36 +22,56 @@ UModal.modal-certificates(v-model:open="open" description="My credentials")
 </template>
 
 <script lang="ts" setup>
-import type { Certificate, CertificateDocument } from '~/types/certificate'
+import type { Certificate } from '~/types/certificate'
 
 const { open } = useUiOverlay('certificates');
+const { getCertificates } = useCertificates()
 
-const normalizeCertificate = (doc: CertificateDocument): Certificate | null => {
-  const source = doc.meta ?? doc
-  if (!source?.name) return null
+const certificates = ref<Certificate[]>([])
+const isLoading = ref(false)
+const hasLoaded = ref(false)
+const loadError = ref<unknown>(null)
 
-  return {
-    name: source.name,
-    issuer: source.issuer ?? null,
-    link: source.link ?? null,
-    thumbnail: source.thumbnail ?? null,
-    summary: source.summary ?? null
+const loadCertificates = async () => {
+  if (hasLoaded.value || isLoading.value) return
+
+  isLoading.value = true
+  loadError.value = null
+
+  try {
+    certificates.value = await getCertificates()
+    hasLoaded.value = true
+  } catch (error) {
+    loadError.value = error
+  } finally {
+    isLoading.value = false
   }
 }
 
-const { data } = await useAsyncData<CertificateDocument[]>('certificates', () =>
-  queryCollection('certificates').all()
-);
+watch(
+  open,
+  (isOpen) => {
+    if (!isOpen || hasLoaded.value) return
 
-const certificates = computed<Certificate[]>(() =>
-  (data.value ?? [])
-    .map(normalizeCertificate)
-    .filter((cert): cert is Certificate => cert !== null)
-);
+    if (!import.meta.client) {
+      void loadCertificates()
+      return
+    }
+
+    requestAnimationFrame(() => {
+      void loadCertificates()
+    })
+  },
+  { immediate: true }
+)
 
 const templateBindings = {
   open,
   certificates,
+  isLoading,
+  hasLoaded,
+  loadError,
+  loadCertificates,
 };
 
 void templateBindings;
