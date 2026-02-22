@@ -107,13 +107,25 @@ const experienceNote = computed(
 
 const { data: projectsData } = useNuxtData('projects')
 const { data: certs } = useNuxtData('certificates')
+const { data: aboutStats } = await useAsyncData<{ projectCount: number; certificateCount: number }>('about-stats', async () => {
+  const [projectDocs, certDocs] = await Promise.all([
+    queryCollection('content').where('path', 'LIKE', '%projects%').all(),
+    queryCollection('certificates').all()
+  ])
 
-const projectCount = computed(() => projectsData.value?.length ?? 0)
+  return {
+    projectCount: Array.isArray(projectDocs) ? projectDocs.length : 0,
+    certificateCount: Array.isArray(certDocs) ? certDocs.length : 0
+  }
+})
+
+const projectCount = computed(() => projectsData.value?.length ?? aboutStats.value?.projectCount ?? 0)
 
 const certificateCount = computed(() => {
   if (Array.isArray(certs.value)) return certs.value.length
   const legacyCertificates = certs.value?.meta?.certificates
-  return Array.isArray(legacyCertificates) ? legacyCertificates.length : 0
+  if (Array.isArray(legacyCertificates)) return legacyCertificates.length
+  return aboutStats.value?.certificateCount ?? 0
 })
 
 const socials = computed<AboutSocialLink[]>(() => {
@@ -224,6 +236,7 @@ const templateBindings = {
   experienceNote,
   projectCount,
   certificateCount,
+  aboutStats,
   openProjects,
   socials,
   about,

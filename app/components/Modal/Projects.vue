@@ -9,7 +9,10 @@ UDrawer.modal-projects(v-model:open="open" description="Hand-picked case studies
     UTabs(v-model="activeTab" :items="tabs")
 
     div.mt-4
-      div(v-if="visibleProjects.length === 0" class="py-10 text-center text-sm text-gray-500")
+      div(v-if="isLoadingProjects" class="py-10 text-center text-sm text-gray-500")
+        span Loading projects...
+
+      div(v-else-if="visibleProjects.length === 0" class="py-10 text-center text-sm text-gray-500")
         span No projects match your search.
 
       ul(class="grid grid-cols-1 sm:grid-cols-3 gap-4")
@@ -34,15 +37,16 @@ UDrawer.modal-projects(v-model:open="open" description="Hand-picked case studies
 </template>
 
 <script lang="ts" setup>
-import type { ProjectType } from '~/types/project'
+import type { ProjectDocument, ProjectType } from '~/types/project'
 
 const { open, closeOverlay } = useUiOverlay('projects')
 const { getProjects } = useProjects()
 
-
-const projects = await getProjects()
-
 const query = ref('')
+const debouncedQuery = ref('')
+const debounceHandle = ref<number | null>(null)
+const isLoadingProjects = ref(false)
+const hasLoadedProjects = ref(false)
 const projectTypes: ProjectType[] = ['fulltime', 'contractor', 'freelance']
 const projectTypeLabels: Record<ProjectType, string> = {
   fulltime: 'Fulltime',
@@ -50,20 +54,92 @@ const projectTypeLabels: Record<ProjectType, string> = {
   freelance: 'Freelance'
 }
 
+const createEmptyProjectBuckets = (): Record<ProjectType, ProjectDocument[]> => ({
+  fulltime: [],
+  contractor: [],
+  freelance: []
+})
+
+const projects = ref<Record<ProjectType, ProjectDocument[]>>(createEmptyProjectBuckets())
+const projectSearchIndex = ref<Record<string, string>>({})
+
+const setProjects = (value: Record<ProjectType, ProjectDocument[]>) => {
+  projects.value = value
+
+  const nextIndex: Record<string, string> = {}
+  for (const type of projectTypes) {
+    for (const project of value[type]) {
+      nextIndex[project.path] =
+        `${project.title ?? ''} ${project.description ?? ''} ${(project.meta?.technologies || []).join(' ')}`.toLowerCase()
+    }
+  }
+  projectSearchIndex.value = nextIndex
+
+  const firstNonEmpty = projectTypes.find((type) => value[type].length > 0)
+  if (firstNonEmpty) activeTab.value = firstNonEmpty
+}
+
+const loadProjects = async () => {
+  if (hasLoadedProjects.value || isLoadingProjects.value) return
+
+  isLoadingProjects.value = true
+  try {
+    setProjects(await getProjects())
+    hasLoadedProjects.value = true
+  } finally {
+    isLoadingProjects.value = false
+  }
+}
+
 const tabs = computed(() => [
-  { label: `Full-time (${projects.fulltime.length})`, value: 'fulltime', icon: 'i-heroicons-briefcase' },
-  { label: `Contractor (${projects.contractor.length})`, value: 'contractor', icon: 'i-heroicons-building-office-2' },
-  { label: `Freelance (${projects.freelance.length})`, value: 'freelance', icon: 'i-heroicons-rocket-launch' }
+  { label: `Full-time (${projects.value.fulltime.length})`, value: 'fulltime', icon: 'i-heroicons-briefcase' },
+  { label: `Contractor (${projects.value.contractor.length})`, value: 'contractor', icon: 'i-heroicons-building-office-2' },
+  { label: `Freelance (${projects.value.freelance.length})`, value: 'freelance', icon: 'i-heroicons-rocket-launch' }
 ])
 
-const activeTab = ref<ProjectType>(projectTypes.find(type => projects[type].length > 0) || 'fulltime')
+const activeTab = ref<ProjectType>('fulltime')
+
+watch(
+  query,
+  (value) => {
+    if (debounceHandle.value !== null && import.meta.client) {
+      window.clearTimeout(debounceHandle.value)
+    }
+
+    if (!import.meta.client) {
+      debouncedQuery.value = value
+      return
+    }
+
+    debounceHandle.value = window.setTimeout(() => {
+      debouncedQuery.value = value
+    }, 150)
+  },
+  { immediate: true }
+)
+
+watch(
+  open,
+  (isOpen) => {
+    if (!isOpen || hasLoadedProjects.value) return
+    if (!import.meta.client) {
+      void loadProjects()
+      return
+    }
+
+    requestAnimationFrame(() => {
+      void loadProjects()
+    })
+  },
+  { immediate: true }
+)
 
 const filterProjects = (type: ProjectType) => {
-  const normalizedQuery = query.value.trim().toLowerCase()
-  const list = projects[type]
+  const normalizedQuery = debouncedQuery.value.trim().toLowerCase()
+  const list = projects.value[type]
   if (!normalizedQuery) return list
   return list.filter((project) => {
-    const haystack = `${project.title} ${project.description} ${(project.meta?.technologies || []).join(' ')}`.toLowerCase()
+    const haystack = projectSearchIndex.value[project.path] ?? ''
     return haystack.includes(normalizedQuery)
   })
 }
@@ -77,6 +153,12 @@ const avatarText = (title: string) => {
   return initials!.toUpperCase()
 }
 
+onUnmounted(() => {
+  if (debounceHandle.value !== null && import.meta.client) {
+    window.clearTimeout(debounceHandle.value)
+  }
+})
+
 const templateBindings = {
   open,
   closeOverlay,
@@ -85,8 +167,12 @@ const templateBindings = {
   visibleProjects,
   avatarText,
   query,
+  debouncedQuery,
   projects,
   projectTypeLabels,
+  isLoadingProjects,
+  hasLoadedProjects,
+  loadProjects,
 };
 
 void templateBindings;

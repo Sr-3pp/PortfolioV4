@@ -3,7 +3,6 @@ canvas(ref="canvasRef")
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from 'vue'
 import type { Star } from '~/types/stars'
 
 defineOptions({ name: 'StarsCanvas' });
@@ -14,6 +13,10 @@ let ctx: CanvasRenderingContext2D | null = null
 let animationId = 0
 let stars: Star[] = []
 let dpr = 1
+let lastFrameTime = 0
+let reducedMotionQuery: MediaQueryList | null = null
+let prefersReducedMotion = false
+const targetFrameMs = 1000 / 30
 
 const neonColors = ['#00ffff', '#ff00ff', '#00ff99', '#ffdd00', '#ff0066', '#66f', '#0ff']
 
@@ -21,7 +24,7 @@ const rand = (min: number, max: number) => Math.random() * (max - min) + min
 
 const createStars = (width: number, height: number) => {
 	const area = width * height
-	const count = Math.max(80, Math.floor(area / 20000))
+	const count = Math.min(140, Math.max(40, Math.floor(area / 35000)))
 	const result: Star[] = []
 	for (let index = 0; index < count; index += 1) {
 		const colorIndex = Math.floor(Math.random() * neonColors.length)
@@ -43,7 +46,7 @@ const resizeCanvas = () => {
 
 	const width = window.innerWidth
 	const height = window.innerHeight
-	dpr = Math.max(1, window.devicePixelRatio || 1)
+	dpr = Math.min(1.5, Math.max(1, window.devicePixelRatio || 1))
 
 	canvas.style.width = `${width}px`
 	canvas.style.height = `${height}px`
@@ -58,6 +61,18 @@ const resizeCanvas = () => {
 const render = (time: number) => {
 	const canvas = canvasRef.value
 	if (!canvas || !ctx) return
+
+  if (prefersReducedMotion) {
+    animationId = 0
+    return
+  }
+
+  if (time - lastFrameTime < targetFrameMs) {
+    animationId = requestAnimationFrame(render)
+    return
+  }
+  lastFrameTime = time
+
 	const width = canvas.width / dpr
 	const height = canvas.height / dpr
 
@@ -72,7 +87,7 @@ const render = (time: number) => {
 		ctx.fillStyle = star.color
 		ctx.globalAlpha = alpha
 
-		ctx.shadowBlur = star.size * 8
+		ctx.shadowBlur = star.size * 4
 		ctx.shadowColor = star.color
 		ctx.beginPath()
 		ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2)
@@ -96,7 +111,7 @@ const stopAnimation = () => {
 }
 
 const startAnimation = () => {
-	if (!animationId) animationId = requestAnimationFrame(render)
+	if (!animationId && !prefersReducedMotion) animationId = requestAnimationFrame(render)
 }
 
 const handleVisibilityChange = () => {
@@ -107,15 +122,33 @@ const handleVisibilityChange = () => {
 	}
 }
 
+const handleReducedMotionChange = (event: MediaQueryListEvent) => {
+  prefersReducedMotion = event.matches
+  if (prefersReducedMotion) {
+    stopAnimation()
+    if (ctx && canvasRef.value) {
+      const width = canvasRef.value.width / dpr
+      const height = canvasRef.value.height / dpr
+      ctx.clearRect(0, 0, width, height)
+    }
+    return
+  }
+  startAnimation()
+}
+
 onMounted(() => {
 	const canvas = canvasRef.value
 	if (!canvas) return
 	ctx = canvas.getContext('2d')
 	if (!ctx) return
 
+  reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  prefersReducedMotion = reducedMotionQuery.matches
+
 	resizeCanvas()
-	window.addEventListener('resize', resizeCanvas)
+	window.addEventListener('resize', resizeCanvas, { passive: true })
 	document.addEventListener('visibilitychange', handleVisibilityChange)
+  reducedMotionQuery.addEventListener('change', handleReducedMotionChange)
 	startAnimation()
 })
 
@@ -123,6 +156,7 @@ onUnmounted(() => {
 	stopAnimation()
 	window.removeEventListener('resize', resizeCanvas)
 	document.removeEventListener('visibilitychange', handleVisibilityChange)
+  reducedMotionQuery?.removeEventListener('change', handleReducedMotionChange)
 })
 
 </script>
@@ -134,9 +168,8 @@ canvas {
 	width: 100%;
 	height: 100%;
 	display: block;
-	pointer-events: none;
+  pointer-events: none;
 	z-index: 22;
 	background: transparent;
-  filter: blur(5px);
 }
 </style>
