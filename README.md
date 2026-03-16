@@ -1,137 +1,126 @@
-# Nuxt Minimal Starter
+# Sr3pp Portfolio V4
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Content-driven portfolio built with Nuxt 4, Nuxt Content, Nuxt UI, and Vercel deployment targets.
+
+## Stack
+
+- Nuxt 4
+- Nuxt Content for page and project content
+- Nuxt UI for interface components
+- Nuxt Image and Nuxt Scripts
+- Vercel Analytics and Speed Insights
+- `nuxt-nodemailer` for the contact form endpoint
+- Nuxt Studio for content editing
+
+## Features
+
+- Home and about pages powered by content files
+- Project detail pages generated from Markdown content
+- SEO metadata and JSON-LD for portfolio pages
+- Contact API endpoint that sends emails through configured SMTP
+- Vercel-ready Nitro build output
+
+## Project Structure
+
+```text
+app/
+  components/        UI and content components
+  composables/       shared Nuxt composables
+  pages/             route pages
+content/
+  json/              certificates and CV data
+  pages/             home, about, and project content
+server/
+  api/contact.ts     contact form email endpoint
+tests/               Vitest test suite
+```
 
 ## Setup
 
-Make sure to install dependencies:
+Install dependencies with pnpm:
 
 ```bash
-# npm
-npm install
-
-# pnpm
 pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+Start the dev server at `http://localhost:3000`:
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
 pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
-
-Build the application for production:
+## Scripts
 
 ```bash
-# npm
-npm run build
-
-# pnpm
+pnpm dev
 pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+pnpm preview
+pnpm lint
+pnpm test
+pnpm test:run
+pnpm test:coverage
+pnpm typecheck
+pnpm ci:check
 ```
 
-Locally preview production build:
+## Environment Variables
+
+Create a `.env` file for local development as needed.
+
+### Public site metadata
 
 ```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+NUXT_PUBLIC_SITE_URL=https://sr3pp.dev
+NUXT_CONTACT_MAIL=you@example.com
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+### SMTP for contact form
 
-## Auth (Admin)
-
-Set these env vars to enable local admin login:
-
-```
-# .env
-NUXT_ADMIN_EMAIL=you@example.com
-NUXT_ADMIN_PASSWORD=yourStrongPassword
-# optional
-NUXT_SESSION_SECRET=change-me
+```bash
+NUXT_EMAIL_FROM=portfolio@example.com
+NUXT_EMAIL_HOST=smtp.example.com
+NUXT_EMAIL_PORT=465
+NUXT_EMAIL_USER=portfolio@example.com
+NUXT_EMAIL_PASS=your-password
 ```
 
-Then restart the dev server and visit `/admin` → `/login`.
+### Nuxt Studio integration
 
-### Better Auth (SQLite storage)
-
-By default, the auth DB is created at `./.data/auth.sqlite`. To customize, set:
-
-```
-BETTER_AUTH_SQLITE_PATH=/absolute/or/relative/path/to/auth.sqlite
-```
-
-Ensure the containing directory exists or is creatable by the server process.
-
-### Admin Email Allowlist
-
-Restrict `/admin` access to specific emails by setting a comma-separated list:
-
-```
-# .env
-NUXT_ADMIN_EMAILS=you@example.com, teammate@company.com
+```bash
+STUDIO_GITHUB_OWNER=your-github-user
+STUDIO_GITHUB_REPO=your-repo
+STUDIO_GITHUB_BRANCH=main
+STUDIO_GITHUB_ROOT_DIR=content
 ```
 
-Notes:
-- If `NUXT_ADMIN_EMAILS` is empty or unset, any authenticated user can access `/admin`.
-- The check is enforced client-side in `app/middleware/admin-auth.global.ts` after fetching the session.
+## Content Editing
 
-### Access Tokens for External API Calls
+Most portfolio data lives under `content/`:
 
-You can call protected API routes from outside the app using an access token:
+- `content/pages/index.md` for homepage content
+- `content/pages/about.md` for the about page
+- `content/pages/projects/**` for project entries
+- `content/json/cv.json` for CV data
+- `content/json/certificates/*.json` for certificate data
 
-1. Sign in via Better Auth credentials endpoint and capture the `set-auth-token` header:
+Nuxt Studio is mounted at `/studio` when configured.
 
-   - `POST /api/auth/sign-in/email` with JSON `{ email, password }`
-   - Read the `set-auth-token` response header; this is your bearer token
+## Contact Endpoint
 
-2. Use the token in `Authorization` when calling protected routes:
+The contact form posts to `POST /api/contact`.
 
+It sends a message using the configured SMTP credentials and `NUXT_CONTACT_MAIL` as the recipient.
+
+## Deployment
+
+This project is configured for Vercel through Nitro:
+
+- `nitro.preset = 'vercel'`
+- route rules enable caching for public content pages
+- Vercel Analytics and Speed Insights are enabled
+
+Build locally with:
+
+```bash
+pnpm build
 ```
-Authorization: Bearer <set-auth-token>
-```
-
-Server middleware accepts either session cookies or `Authorization: Bearer` tokens for all `/api/**` except `/api/contact` and `/api/auth/**`.
-
-To require a bearer token (and ignore cookies) for API calls, set:
-
-```
-NUXT_API_REQUIRE_BEARER=1
-```
-
-This is useful when you want tools like Postman or external services to always provide a token and not rely on browser cookies.
