@@ -18,7 +18,7 @@
 <script setup lang="ts">
 	import type { Ref } from 'vue'
 	import { Analytics } from '@vercel/analytics/nuxt';
-	import { SpeedInsights } from "@vercel/speed-insights/nuxt"
+	import SpeedInsights from "@vercel/speed-insights/nuxt"
 
   const certsOverlay = useUiOverlay('certificates')
   const projectsOverlay = useUiOverlay('projects')
