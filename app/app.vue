@@ -1,7 +1,6 @@
 <template>
   <main>
 	<Analytics />
-	<SpeedInsights/>
     <NuxtRouteAnnouncer />
     <Intro />
     <div class="flex flex-col gap-8 sm:gap-12">
@@ -17,8 +16,7 @@
 
 <script setup lang="ts">
 	import type { Ref } from 'vue'
-	import { Analytics } from '@vercel/analytics/nuxt';
-	import { SpeedInsights } from "@vercel/speed-insights/nuxt"
+ 	import { Analytics } from '@vercel/analytics/nuxt';
 
   const certsOverlay = useUiOverlay('certificates')
   const projectsOverlay = useUiOverlay('projects')

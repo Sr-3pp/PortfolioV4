@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     '@nuxt/scripts',
     '@nuxt/test-utils',
     '@nuxt/ui',
+    '@vercel/speed-insights/nuxt',
     'nuxt-nodemailer',
     'nuxt-studio'
   ],
