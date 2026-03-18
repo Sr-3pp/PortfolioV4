@@ -38,7 +38,8 @@ export default defineContentConfig({
           role: z.string(),
           start_date: z.string(),
           end_date: z.string().nullable().optional(),
-          highlights: z.array(z.string())
+          highlights: z.array(z.string()),
+          technologies: z.array(z.string()).optional()
         })),
         freelance_projects: z.array(z.object({
           name: z.string(),
