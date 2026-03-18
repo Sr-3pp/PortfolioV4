@@ -1,7 +1,7 @@
 <template lang="pug">
 UDrawer.modal-resume(v-model:open="open" description="My Resume" direction="top")
   template(#title)
-    .flex.items-center.justify-between.gap-3.w-full
+    .flex.items-center.justify-between.gap-3.w-full.resume-print-hidden
       span.text-lg.font-semibold My Resume
       UButton(icon="i-heroicons-printer" size="sm" variant="soft" color="primary" @click="printCv") Print
 
@@ -24,15 +24,19 @@ UDrawer.modal-resume(v-model:open="open" description="My Resume" direction="top"
 
       section.mb-6(v-if="cv.experience?.length")
         h2.text-lg.font-semibold.mb-3 Experience
-        ul.space-y-4
+        ul.space-y-6
           li(v-for="(job, idx) in cv.experience" :key="idx")
             .flex.items-start.justify-between.gap-4
               .min-w-0
                 h3.font-semibold.leading-tight {{ job.role }}
                 p.text-sm.text-gray-600 {{ job.company }}
               p.text-xs.text-gray-500.whitespace-nowrap {{ formatRange(job.start_date, job.end_date) }}
-            ul.list-disc.list-inside.text-sm.text-gray-700.mt-2
+            ul.list-disc.list-inside.text-sm.text-gray-700.my-2
               li(v-for="(h, hIdx) in job.highlights" :key="hIdx" v-html="h")
+            template(v-if="job.technologies?.length")
+              strong Technologies:
+              ul.flex.flex-wrap.gap-2.mt-1
+                li(v-for="(tech, tIdx) in job.technologies" :key="`tech-${idx}-${tIdx}`" class="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded") {{ tech }}
 
       section.mb-6(v-if="cv.freelance_projects?.length")
         h2.text-lg.font-semibold.mb-2 Freelance Projects
@@ -41,7 +45,7 @@ UDrawer.modal-resume(v-model:open="open" description="My Resume" direction="top"
             p.text-sm
               span.font-medium {{ fp.name }}:
               span.text-gray-700.ml-1(v-if="fp.description" v-html="fp.description")
-            UButton.mt-1(v-if="fp.link" :href="fp.link" target="_blank" rel="noopener" size="xs" variant="soft" icon="i-heroicons-arrow-top-right-on-square") View project
+            UButton.resume-print-hidden.mt-1(v-if="fp.link" :href="fp.link" target="_blank" rel="noopener" size="xs" variant="soft" icon="i-heroicons-arrow-top-right-on-square") View project
 
       section.mb-6(v-if="cv.education?.length")
         h2.text-lg.font-semibold.mb-2 Education
@@ -79,6 +83,7 @@ import type { CvData, CvDocument, DateLike } from '~/types/cv'
 const { open } = useUiOverlay('resume')
 
 const { data } = await useAsyncData<CvDocument>('cv', () => queryCollection('cv').first())
+
 const PRINT_MODE_CLASS = 'print-resume-only'
 
 type CvRecord = Record<string, unknown>
@@ -111,7 +116,8 @@ const normalizeCv = (doc: CvDocument | null | undefined): CvData => {
       role: asString(row.role),
       start_date: (row.start_date ?? row.startDate ?? null) as DateLike,
       end_date: (row.end_date ?? row.endDate ?? null) as DateLike,
-      highlights: asStringList(row.highlights)
+      highlights: asStringList(row.highlights),
+      technologies: asStringList(row.technologies)
     }
   })
 
@@ -306,8 +312,7 @@ onUnmounted(() => {
 
   html.print-resume-only .cv-print * { visibility: visible !important; }
 
-  html.print-resume-only .cv-print .ubutton,
-  html.print-resume-only .cv-print button {
+  html.print-resume-only .resume-print-hidden {
     display: none !important;
   }
 

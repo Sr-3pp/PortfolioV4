@@ -29,6 +29,16 @@
         "Own day-to-day upkeep of the Nuxt 3 marketing site, quickly resolving regressions before they ship.",
         "Rolled out Prismic Slice Machine so content and marketing teams can publish modular slices without engineering handoffs.",
         "Coordinated with Salesforce stakeholders to keep CRM-driven content in sync across environments."
+      ],
+      "technologies": [
+        "Vue 3",
+        "Nuxt 3",
+        "TypeScript",
+        "JavaScript",
+        "Prismic (Slice Machine)",
+        "Salesforce",
+        "SCSS",
+        "REST APIs"
       ]
     },
     {
@@ -40,6 +50,16 @@
         "Developed and maintained Lit-based web components consumed by PHP-powered surfaces across the platform.",
         "Profiled and tuned UI performance so inventory and admin experiences stayed fast at scale.",
         "Partnered with QA and backend teams to uphold accessibility and maintainable release processes."
+      ],
+      "technologies": [
+        "Lit",
+        "Web Components",
+        "JavaScript",
+        "TypeScript",
+        "HTML",
+        "SCSS",
+        "Performance Optimization",
+        "Accessibility (WCAG)"
       ]
     },
     {
@@ -51,6 +71,15 @@
         "Shipped React frontends for the Prism product, backed by a GraphQL API and modular design system.",
         "Customized branding and themes for enterprise clients while keeping experiences accessible.",
         "Documented component usage and supported internal teams with adoption and rollout."
+      ],
+      "technologies": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "GraphQL",
+        "Design Systems",
+        "HTML",
+        "CSS"
       ]
     },
     {
@@ -62,6 +91,18 @@
         "Led the build of a reusable Web Components system in TypeScript for flagship banking journeys.",
         "Embedded accessibility and responsiveness standards across public and private experiences.",
         "Monitored performance metrics and introduced tooling to keep customer flows fast and reliable."
+      ],
+      "technologies": [
+        "JavaScript",
+        "TypeScript",
+        "Web Components",
+        "HTML",
+        "SCSS",
+        "Node.js",
+        "Express.js",
+        "REST APIs",
+        "Accessibility (WCAG)",
+        "Performance Optimization"
       ]
     },
     {
@@ -73,6 +114,15 @@
         "Implemented and maintained Magento modules powering day-to-day e-commerce operations.",
         "Integrated supplier services and payment providers while safeguarding storefront performance.",
         "Collaborated with merchandising teams to translate business requirements into storefront features."
+      ],
+      "technologies": [
+        "Magento",
+        "PHP",
+        "JavaScript",
+        "MySQL",
+        "HTML",
+        "CSS",
+        "E-commerce Integrations"
       ]
     },
     {
@@ -84,6 +134,15 @@
         "Managed restaurant sites end-to-end, keeping content fresh, responsive, and SEO friendly.",
         "Resolved production issues and hardened infrastructure against common security threats.",
         "Used analytics to target UX tweaks that improved customer engagement and conversions."
+      ],
+      "technologies": [
+        "PHP",
+        "JavaScript",
+        "MySQL",
+        "HTML",
+        "CSS",
+        "SEO",
+        "Web Analytics"
       ]
     },
     {
@@ -95,6 +154,13 @@
         "Maintained corporate web properties and coordinated scheduled content refreshes.",
         "Created email templates and microsites with Adobe Muse, HTML, and CSS.",
         "Partnered with regional teams to ensure availability and consistency across markets."
+      ],
+      "technologies": [
+        "HTML",
+        "CSS",
+        "Adobe Muse",
+        "Email Development",
+        "JavaScript (basic)"
       ]
     },
     {
@@ -106,6 +172,12 @@
         "Produced marketing collateral—flyers, posters, and social media graphics—for product launches.",
         "Collaborated with marketing stakeholders to align messaging and brand standards across campaigns.",
         "Delivered 3D exhibition assets and animations for trade show activations."
+      ],
+      "technologies": [
+        "Adobe Illustrator",
+        "Adobe Photoshop",
+        "3D Design Tools",
+        "Motion Graphics"
       ]
     }
   ],

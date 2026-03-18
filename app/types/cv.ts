@@ -10,6 +10,7 @@ export interface CvExperience {
   start_date?: string | number | null
   end_date?: string | number | null
   highlights?: string[]
+  technologies?: string[]
 }
 
 export interface CvProject {
