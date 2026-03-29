@@ -14,13 +14,23 @@ const resolveProjectType = (rawType: unknown): ProjectType => {
 }
 
 const sortProjects = (entries: ProjectListItem[]) =>
-  entries.sort((left, right) => String(left.title ?? '').localeCompare(String(right.title ?? '')))
+  entries.sort((left, right) => {
+    const leftHighlighted = left.meta?.highlight === true
+    const rightHighlighted = right.meta?.highlight === true
+
+    if (leftHighlighted !== rightHighlighted) {
+      return leftHighlighted ? -1 : 1
+    }
+
+    return String(left.title ?? '').localeCompare(String(right.title ?? ''))
+  })
 
 type ProjectListSource = {
   path?: unknown
   title?: unknown
   description?: unknown
   meta?: {
+    highlight?: unknown
     type?: unknown
     technologies?: unknown
   } | null
@@ -39,6 +49,7 @@ const toProjectListItem = (item: ProjectListSource): ProjectListItem | null => {
     title: typeof item.title === 'string' ? item.title : undefined,
     description: typeof item.description === 'string' ? item.description : undefined,
     meta: {
+      highlight: item.meta?.highlight === true,
       type: typeof item.meta?.type === 'string' ? item.meta.type : undefined,
       technologies
     }
