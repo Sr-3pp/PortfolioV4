@@ -9,6 +9,7 @@ export interface ProjectLink {
 }
 
 export interface ProjectMeta {
+  highlight?: boolean
   type?: string
   links?: ProjectLink[]
   role?: string
@@ -22,7 +23,7 @@ export interface ProjectListItem {
   path: string
   title?: string
   description?: string
-  meta?: Pick<ProjectMeta, 'type' | 'technologies'>
+  meta?: Pick<ProjectMeta, 'highlight' | 'type' | 'technologies'>
 }
 
 export type ProjectBuckets<T> = Record<ProjectType, T[]>

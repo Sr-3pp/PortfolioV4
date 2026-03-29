@@ -17,7 +17,11 @@ UDrawer.modal-projects(v-model:open="open" description="Hand-picked case studies
 
       ul(class="grid grid-cols-1 sm:grid-cols-3 gap-4")
         li(v-for="project in visibleProjects" :key="project.path" class="h-full")
-          UCard(class="h-full group transition-transform duration-150 hover:-translate-y-0.5")
+          UCard(
+            class="h-full group transition-transform duration-150 hover:-translate-y-0.5"
+            :ui="{ root: project.meta?.highlight ? 'ring-1 ring-primary-500/30 border border-primary-500/40' : '' }"
+            :style="project.meta?.highlight ? { background: 'rgba(59, 130, 246, 0.08)' } : undefined"
+          )
             template(#header)
               .flex.items-center.justify-between
                 .flex.items-center.gap-3
@@ -160,6 +164,9 @@ const filterProjects = (type: ProjectType): ProjectListItem[] => {
       filtered.push(project)
     }
   }
+
+  console.log(`Filtering projects by type "${type}" with query "${normalizedQuery}" - ${filtered.length} matches found`)
+  console.log('Filtered projects:', filtered)
 
   return filtered
 }
