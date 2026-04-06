@@ -8,11 +8,11 @@ section
             div(class="space-y-1 flex-1")
               h1(class="text-2xl font-semibold") {{ project.title }}
               p(v-if="project.description" class="text-white/70" v-html="project.description")
-            UBadge(variant="subtle") {{ project?.meta?.type || 'project' }}
+            UBadge(variant="subtle") {{ project?.type || 'project' }}
 
         template(#default)
           ul.flex.flex-wrap.gap-2.mb-4
-            li(v-for="link in project.meta.links" :key="link.url" class="inline")
+            li(v-for="link in project.links || []" :key="link.url" class="inline")
               UButton(
                 :href="link.url"
                 target="_blank"
@@ -32,17 +32,17 @@ section
                 div.text-sm.flex.items-center.gap-2(class="text-white/60")
                   UIcon(name="i-heroicons-user")
                   span Role
-                .mt-1.font-medium {{ project?.meta?.role || '—' }}
+                .mt-1.font-medium {{ project?.role || '—' }}
               div.rounded-lg.border.p-4(class="border-white/10 bg-white/5")
                 div.text-sm.flex.items-center.gap-2(class="text-white/60")
                   UIcon(name="i-heroicons-calendar")
                   span Period
-                .mt-1.font-medium {{ project?.meta?.period || '—' }}
+                .mt-1.font-medium {{ project?.period || '—' }}
               div.rounded-lg.border.p-4(class="border-white/10 bg-white/5")
                 div.text-sm.flex.items-center.gap-2(class="text-white/60")
                   UIcon(name="i-heroicons-cog-6-tooth")
                   span Technologies
-                TechChips.mt-2(:items="project?.meta?.technologies || []" size="xs" variant="soft" color="secondary")
+                TechChips.mt-2(:items="project?.technologies || []" size="xs" variant="soft" color="secondary")
   p(v-if="!project") Loading...
 </template>
 
@@ -79,14 +79,14 @@ watch(
 )
 
 const pageUrl = computed(() => absoluteUrl(route.fullPath))
-const projectTypeLabel = computed(() => getProjectTypeLabel(project.value?.meta?.type))
+const projectTypeLabel = computed(() => getProjectTypeLabel(project.value?.type))
 
 const seoTitle = computed(() => {
   if (!project.value?.title) {
     return 'Project not found | Sr3pp'
   }
 
-  const badge = project.value?.meta?.type ? ` ${String(project.value.meta.type).toUpperCase()}` : ''
+  const badge = project.value?.type ? ` ${String(project.value.type).toUpperCase()}` : ''
   return `${project.value.title}${badge} Case Study`
 })
 
@@ -95,7 +95,7 @@ const seoDescription = computed(
 )
 
 const socialImage = computed(() => {
-  const cover = project.value?.meta?.image || project.value?.meta?.cover
+  const cover = project.value?.image || project.value?.cover
   return cover ? absoluteUrl(cover) : defaultImage.value
 })
 
@@ -153,8 +153,8 @@ const projectSchema = computed(() => {
       name: 'Jose Martin Ruiz Rico'
     },
     inLanguage: 'en',
-    keywords: Array.isArray(project.value.meta?.technologies)
-      ? project.value.meta.technologies.join(', ')
+    keywords: Array.isArray(project.value.technologies)
+      ? project.value.technologies.join(', ')
       : undefined,
     dateModified: project.value.updatedAt,
     image: socialImage.value

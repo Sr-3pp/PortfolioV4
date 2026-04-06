@@ -1,8 +1,6 @@
 import {
   createProjectBuckets,
-  normalizeProjectListItem,
   PROJECT_TYPES,
-  resolveProjectType,
   sortProjectList,
   type ProjectDocument,
   type ProjectListItem
@@ -12,19 +10,15 @@ const createProjectKey = (type: string, slug: string) => `project-${type}-${slug
 
 export const useProjects = () => {
   const getProjects = async () => {
-    const { data } = await useAsyncData('projects', () =>
-      queryCollection('content').where('path', 'LIKE', '%projects%').all()
+    const { data } = await useAsyncData<ProjectListItem[]>('projects', () =>
+      queryCollection('projects').all()
     )
 
     const buckets = createProjectBuckets<ProjectListItem>()
-    const entries = Array.isArray(data.value) ? data.value : []
+    const entries = data.value ?? []
 
     for (const item of entries) {
-      const normalized = normalizeProjectListItem(item)
-      if (!normalized) continue
-
-      const type = resolveProjectType(normalized.meta?.type)
-      buckets[type].push(normalized)
+      buckets[item.type].push(item)
     }
 
     PROJECT_TYPES.forEach((type) => sortProjectList(buckets[type]))
@@ -43,7 +37,7 @@ export const useProjects = () => {
     const { data } = await useAsyncData(
       createProjectKey(normalizedType, normalizedSlug),
       () =>
-        queryCollection('content')
+        queryCollection('projects')
           .where('path', 'LIKE', `%projects/${normalizedType}/${normalizedSlug}%`)
           .first()
     )

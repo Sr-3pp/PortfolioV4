@@ -110,7 +110,7 @@ const { data: projectsData } = useNuxtData('projects')
 const { data: certs } = useNuxtData('certificates')
 const { data: aboutStats } = await useAsyncData<AboutStats>('about-stats', async () => {
   const [projectDocs, certDocs] = await Promise.all([
-    queryCollection('content').where('path', 'LIKE', '%projects%').all(),
+    queryCollection('projects').all(),
     queryCollection('certificates').all()
   ])
 
@@ -124,8 +124,6 @@ const projectCount = computed(() => projectsData.value?.length ?? aboutStats.val
 
 const certificateCount = computed(() => {
   if (Array.isArray(certs.value)) return certs.value.length
-  const legacyCertificates = certs.value?.meta?.certificates
-  if (Array.isArray(legacyCertificates)) return legacyCertificates.length
   return aboutStats.value?.certificateCount ?? 0
 })
 

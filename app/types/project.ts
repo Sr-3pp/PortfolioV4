@@ -1,60 +1,56 @@
 import type { ContentCollectionItem } from '@nuxt/content'
+import { z } from 'zod'
 
-export type ProjectType = 'fulltime' | 'contractor' | 'freelance'
+export const PROJECT_TYPES = ['fulltime', 'contractor', 'freelance'] as const
+
+export const projectLinkSchema = z.object({
+  name: z.string(),
+  url: z.string(),
+  icon: z.string().optional()
+})
+
+export const projectSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  type: z.enum(PROJECT_TYPES),
+  highlight: z.boolean().optional(),
+  role: z.string().optional(),
+  period: z.string().optional(),
+  technologies: z.array(z.string()).optional(),
+  links: z.array(projectLinkSchema).optional(),
+  image: z.string().optional(),
+  cover: z.string().optional()
+})
+
+export type ProjectType = (typeof PROJECT_TYPES)[number]
 export type ProjectBuckets<T> = Record<ProjectType, T[]>
 export type ProjectSearchIndex = Record<string, string>
 export type ProjectTypeLabelMap = Record<ProjectType, string>
 
-export const PROJECT_TYPES: ProjectType[] = ['fulltime', 'contractor', 'freelance']
 export const PROJECT_TYPE_LABELS: ProjectTypeLabelMap = {
   fulltime: 'Fulltime',
   contractor: 'Contractor',
   freelance: 'Freelance'
 }
 
-export interface ProjectLink {
-  url: string
-  name: string
-  icon?: string
-}
-
-export interface ProjectMeta {
-  highlight?: boolean
-  type?: ProjectType
-  links?: ProjectLink[]
-  role?: string
-  period?: string
-  technologies?: string[]
-  image?: string
-  cover?: string
+export type ProjectLink = z.infer<typeof projectLinkSchema>
+export type ProjectContent = z.infer<typeof projectSchema> & {
+  updatedAt?: string
 }
 
 export interface ProjectListItem {
   path: string
-  title?: string
-  description?: string
-  meta?: Pick<ProjectMeta, 'highlight' | 'type' | 'technologies'>
+  title: string
+  description: string
+  type: ProjectType
+  highlight?: boolean
+  technologies?: string[]
 }
 
-export interface ProjectContent {
-  title?: string
-  description?: string
-  meta?: ProjectMeta
-  updatedAt?: string
-}
-
-export type ProjectDocument = Omit<ContentCollectionItem, 'title' | 'description' | 'meta' | 'updatedAt'> & ProjectContent
-
-type ProjectListSource = {
-  path?: unknown
-  title?: unknown
-  description?: unknown
-  meta?: {
-    highlight?: unknown
-    type?: unknown
-    technologies?: unknown
-  } | null
-}
+export type ProjectDocument = Omit<
+  ContentCollectionItem,
+  keyof z.infer<typeof projectSchema> | 'updatedAt'
+> & ProjectContent
 
 export const createProjectBuckets = <T>(): ProjectBuckets<T> => ({
   fulltime: [],
@@ -62,17 +58,13 @@ export const createProjectBuckets = <T>(): ProjectBuckets<T> => ({
   freelance: []
 })
 
-export const resolveProjectType = (rawType: unknown): ProjectType => {
-  const normalized = String(rawType || '').toLowerCase() as ProjectType
-  return PROJECT_TYPES.includes(normalized) ? normalized : 'freelance'
-}
-
-export const getProjectTypeLabel = (type: unknown) => PROJECT_TYPE_LABELS[resolveProjectType(type)]
+export const getProjectTypeLabel = (type: ProjectType | null | undefined) =>
+  PROJECT_TYPE_LABELS[type ?? 'freelance']
 
 export const sortProjectList = (entries: ProjectListItem[]) =>
   entries.sort((left, right) => {
-    const leftHighlighted = left.meta?.highlight === true
-    const rightHighlighted = right.meta?.highlight === true
+    const leftHighlighted = left.highlight === true
+    const rightHighlighted = right.highlight === true
 
     if (leftHighlighted !== rightHighlighted) {
       return leftHighlighted ? -1 : 1
@@ -81,28 +73,8 @@ export const sortProjectList = (entries: ProjectListItem[]) =>
     return String(left.title ?? '').localeCompare(String(right.title ?? ''))
   })
 
-export const normalizeProjectListItem = (item: ProjectListSource): ProjectListItem | null => {
-  const path = typeof item.path === 'string' ? item.path : ''
-  if (!path) return null
-
-  const technologies = Array.isArray(item.meta?.technologies)
-    ? item.meta.technologies.filter((tech): tech is string => typeof tech === 'string')
-    : []
-
-  return {
-    path,
-    title: typeof item.title === 'string' ? item.title : undefined,
-    description: typeof item.description === 'string' ? item.description : undefined,
-    meta: {
-      highlight: item.meta?.highlight === true,
-      type: resolveProjectType(item.meta?.type),
-      technologies
-    }
-  }
-}
-
 export const buildProjectSearchText = (project: ProjectListItem) =>
-  `${project.title ?? ''} ${project.description ?? ''} ${(project.meta?.technologies || []).join(' ')}`.toLowerCase()
+  `${project.title ?? ''} ${project.description ?? ''} ${(project.technologies ?? []).join(' ')}`.toLowerCase()
 
 export const buildProjectSearchIndex = (projects: ProjectBuckets<ProjectListItem>): ProjectSearchIndex => {
   const index: ProjectSearchIndex = {}

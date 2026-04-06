@@ -19,8 +19,8 @@ UDrawer.modal-projects(v-model:open="open" description="Hand-picked case studies
         li(v-for="project in visibleProjects" :key="project.path" class="h-full")
           UCard(
             class="h-full group transition-transform duration-150 hover:-translate-y-0.5"
-            :ui="{ root: project.meta?.highlight ? 'ring-1 ring-primary-500/30 border border-primary-500/40' : '' }"
-            :style="project.meta?.highlight ? { background: 'rgba(59, 130, 246, 0.08)' } : undefined"
+            :ui="{ root: project.highlight ? 'ring-1 ring-primary-500/30 border border-primary-500/40' : '' }"
+            :style="project.highlight ? { background: 'rgba(59, 130, 246, 0.08)' } : undefined"
           )
             template(#header)
               .flex.items-center.justify-between
@@ -32,7 +32,7 @@ UDrawer.modal-projects(v-model:open="open" description="Hand-picked case studies
             template(#default)
               p.text-sm.text-gray-500(v-if="project.description" v-html="project.description")
               ul.flex.flex-wrap.gap-2.mt-4
-                li(v-for="(tech, tIdx) in project.meta.technologies" :key="tIdx")
+                li(v-for="(tech, tIdx) in project.technologies || []" :key="tIdx")
                   UBadge(variant="soft" color="secondary" size="xs") {{ tech }}
 
             template(#footer)

@@ -1,6 +1,6 @@
 ---
 highlight: true
-type: personal
+type: freelance
 title: NuxtThemes
 description: Built a Nuxt app to generate, preview, and export custom Nuxt UI themes with real-time token editing, light/dark mode support, and AI-assisted palette generation.
 technologies: [Nuxt 4, Vue.js, TypeScript, Nuxt UI, JavaScript, Tailwind CSS]

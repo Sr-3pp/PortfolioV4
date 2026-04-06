@@ -1,11 +1,11 @@
-export interface Certificate {
-  name: string
-  issuer?: string | null
-  link?: string | null
-  thumbnail?: string | null
-  summary?: string | null
-}
+import { z } from 'zod'
 
-export interface CertificateDocument extends Partial<Certificate> {
-  meta?: Partial<Certificate>
-}
+export const certificateSchema = z.object({
+  name: z.string(),
+  issuer: z.string(),
+  link: z.string(),
+  thumbnail: z.string(),
+  summary: z.string().optional()
+})
+
+export type Certificate = z.infer<typeof certificateSchema>
