@@ -71,17 +71,8 @@ export const sortProjectList = (entries: ProjectListItem[]) =>
 export const buildProjectSearchText = (project: ProjectListItem) =>
   `${project.title} ${project.description} ${(project.technologies ?? []).join(' ')}`.toLowerCase()
 
-export const buildProjectSearchIndex = (projects: ProjectBuckets<ProjectListItem>): ProjectSearchIndex => {
-  const index: ProjectSearchIndex = {}
-
-  for (const type of PROJECT_TYPES) {
-    for (const project of projects[type]) {
-      index[project.path] = buildProjectSearchText(project)
-    }
-  }
-
-  return index
-}
+export const matchesProjectQuery = (project: ProjectListItem, query: string) =>
+  buildProjectSearchText(project).includes(query.trim().toLowerCase())
 
 export const getFirstProjectTypeWithItems = (projects: ProjectBuckets<ProjectListItem>) =>
   PROJECT_TYPES.find((type) => projects[type].length > 0)

@@ -6,19 +6,20 @@ import {
   type ProjectListItem
 } from '~/types/project'
 
-const createProjectKey = (type: string, slug: string) => `project-${type}-${slug}`
-
 export const useProjects = () => {
   const getProjects = async () => {
-    const { data } = await useAsyncData<ProjectListItem[]>('projects', () =>
-      queryCollection('projects').all()
-    )
-
     const buckets = createProjectBuckets<ProjectListItem>()
-    const entries = data.value ?? []
+    const entries = await queryCollection('projects').all()
 
     for (const item of entries) {
-      buckets[item.type].push(item)
+      buckets[item.type].push({
+        path: item.path,
+        title: item.title,
+        description: item.description,
+        type: item.type,
+        highlight: item.highlight,
+        technologies: item.technologies
+      })
     }
 
     PROJECT_TYPES.forEach((type) => sortProjectList(buckets[type]))
@@ -34,15 +35,11 @@ export const useProjects = () => {
       return null
     }
 
-    const { data } = await useAsyncData(
-      createProjectKey(normalizedType, normalizedSlug),
-      () =>
-        queryCollection('projects')
-          .where('path', 'LIKE', `%${normalizedType}/${normalizedSlug}%`)
-          .first()
-    )
+    const project = await queryCollection('projects')
+      .where('path', 'LIKE', `%${normalizedType}/${normalizedSlug}%`)
+      .first()
 
-    return (data.value as ProjectDocument | null | undefined) ?? null
+    return (project as ProjectDocument | null | undefined) ?? null
   }
 
   return {

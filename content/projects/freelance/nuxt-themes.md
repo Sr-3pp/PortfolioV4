@@ -12,7 +12,7 @@ links: [
 ---
 
 <Grid :cols="1" :md="2" :lg="2">
-  <Card title="Overview" class="bg-secondary">
+  <Card title="Overview" class="bg-elevated">
     <div class="flex flex-col gap-4">
       <a class="font-bold" href="https://nuxtthemes.dev" target="_blank">www.nuxtthemes.dev</a>
       <p>Built an interactive theme generator for Nuxt UI that helps developers create, preview, and export complete design systems without manually tweaking dozens of color tokens.</p>

@@ -3,7 +3,7 @@ UDrawer.modal-projects(v-model:open="open" description="Hand-picked case studies
   template(#title)
     .flex.items-center.justify-between.gap-3
       span.text-lg.font-semibold My Projects
-      UInput(v-model="query" icon="i-heroicons-magnifying-glass-20-solid" size="sm" placeholder="Search projects..." class="w-60")
+      UInput(v-model="query" size="sm" placeholder="Search projects..." class="w-60")
 
   template(#body)
     UTabs(v-model="activeTab" :items="tabs")
@@ -24,9 +24,7 @@ UDrawer.modal-projects(v-model:open="open" description="Hand-picked case studies
           )
             template(#header)
               .flex.items-center.justify-between
-                .flex.items-center.gap-3
-                  UAvatar(:alt="project.title" :text="avatarText(project.title)" size="md")
-                  h3.font-semibold.tracking-tight {{ project.title }}
+                h3.font-semibold.tracking-tight {{ project.title }}
                 UBadge(size="xs" variant="subtle") {{ projectTypeLabels[activeTab] }}
 
             template(#default)
@@ -37,18 +35,17 @@ UDrawer.modal-projects(v-model:open="open" description="Hand-picked case studies
 
             template(#footer)
               .flex.items-center.justify-between
-                UButton(:to="project.path" icon="i-heroicons-arrow-top-right-on-square" variant="soft" color="primary" @click="closeOverlay") View details
+                UButton(:to="project.path" variant="soft" color="primary" @click="closeOverlay") View details
 </template>
 
 <script lang="ts" setup>
 import {
-  buildProjectSearchIndex,
   createProjectBuckets,
   getFirstProjectTypeWithItems,
+  matchesProjectQuery,
   PROJECT_TYPE_LABELS,
   type ProjectBuckets,
   type ProjectListItem,
-  type ProjectSearchIndex,
   type ProjectType
 } from '~/types/project'
 
@@ -56,28 +53,18 @@ const { open, closeOverlay } = useUiOverlay('projects')
 const { getProjects } = useProjects()
 
 const query = ref('')
-const debouncedQuery = ref('')
-const debounceHandle = ref<number | null>(null)
 const isLoadingProjects = ref(false)
 const hasLoadedProjects = ref(false)
 const projectTypeLabels = PROJECT_TYPE_LABELS
 const projects = ref<ProjectBuckets<ProjectListItem>>(createProjectBuckets())
-const projectSearchIndex = ref<ProjectSearchIndex>({})
-
-const setProjects = (value: ProjectBuckets<ProjectListItem>) => {
-  projects.value = value
-  projectSearchIndex.value = buildProjectSearchIndex(value)
-
-  const firstNonEmpty = getFirstProjectTypeWithItems(value)
-  if (firstNonEmpty) activeTab.value = firstNonEmpty
-}
+const activeTab = ref<ProjectType>('fulltime')
 
 const loadProjects = async () => {
   if (hasLoadedProjects.value || isLoadingProjects.value) return
-
   isLoadingProjects.value = true
   try {
-    setProjects(await getProjects())
+    projects.value = await getProjects()
+    activeTab.value = getFirstProjectTypeWithItems(projects.value) ?? 'fulltime'
     hasLoadedProjects.value = true
   } finally {
     isLoadingProjects.value = false
@@ -85,110 +72,35 @@ const loadProjects = async () => {
 }
 
 const tabs = computed(() => [
-  { label: `Full-time (${projects.value.fulltime.length})`, value: 'fulltime', icon: 'i-heroicons-briefcase' },
-  { label: `Contractor (${projects.value.contractor.length})`, value: 'contractor', icon: 'i-heroicons-building-office-2' },
-  { label: `Freelance (${projects.value.freelance.length})`, value: 'freelance', icon: 'i-heroicons-rocket-launch' }
+  { label: `Full-time (${projects.value.fulltime.length})`, value: 'fulltime' },
+  { label: `Contractor (${projects.value.contractor.length})`, value: 'contractor' },
+  { label: `Freelance (${projects.value.freelance.length})`, value: 'freelance' }
 ])
-
-const activeTab = ref<ProjectType>('fulltime')
-
-const getProjectsByType = (type: ProjectType): ProjectListItem[] => {
-  const buckets = projects.value
-
-  switch (type) {
-    case 'fulltime':
-      return buckets.fulltime
-    case 'contractor':
-      return buckets.contractor
-    case 'freelance':
-    default:
-      return buckets.freelance
-  }
-}
-
-watch(
-  query,
-  (value) => {
-    if (debounceHandle.value !== null && import.meta.client) {
-      window.clearTimeout(debounceHandle.value)
-    }
-
-    if (!import.meta.client) {
-      debouncedQuery.value = value
-      return
-    }
-
-    debounceHandle.value = window.setTimeout(() => {
-      debouncedQuery.value = value
-    }, 150)
-  },
-  { immediate: true }
-)
 
 watch(
   open,
   (isOpen) => {
     if (!isOpen || hasLoadedProjects.value) return
-    if (!import.meta.client) {
-      void loadProjects()
-      return
-    }
-
-    requestAnimationFrame(() => {
-      void loadProjects()
-    })
+    void loadProjects()
   },
   { immediate: true }
 )
 
-const filterProjects = (type: ProjectType): ProjectListItem[] => {
-  const normalizedQuery = debouncedQuery.value.trim().toLowerCase()
-  const list = getProjectsByType(type)
+const visibleProjects = computed(() => {
+  const list = projects.value[activeTab.value]
+  const normalizedQuery = query.value.trim().toLowerCase()
+
   if (!normalizedQuery) return list
 
-  const filtered: ProjectListItem[] = []
-  for (const project of list) {
-    const haystack = projectSearchIndex.value[project.path] ?? ''
-    if (haystack.includes(normalizedQuery)) {
-      filtered.push(project)
-    }
-  }
-
-  return filtered
-}
-
-const visibleProjects = computed(() => filterProjects(activeTab.value))
-
-const avatarText = (title: string) => {
-  if (!title) return 'P'
-  const parts = title.split(/\s+/).filter(Boolean)
-  const initials = parts.length >= 2 ? `${parts[0]![0]!}${parts[1]![0]!}` : parts[0]![0]
-  return initials!.toUpperCase()
-}
-
-onUnmounted(() => {
-  if (debounceHandle.value !== null && import.meta.client) {
-    window.clearTimeout(debounceHandle.value)
-  }
+  return list.filter((project) => matchesProjectQuery(project, normalizedQuery))
 })
 
-const templateBindings = {
-  open,
+void {
   closeOverlay,
-  tabs,
-  activeTab,
-  visibleProjects,
-  avatarText,
-  query,
-  debouncedQuery,
-  projects,
   projectTypeLabels,
-  isLoadingProjects,
-  hasLoadedProjects,
-  loadProjects,
-};
-
-void templateBindings;
+  tabs,
+  visibleProjects
+}
 </script>
 
 <style>
