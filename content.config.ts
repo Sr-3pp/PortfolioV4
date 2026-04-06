@@ -1,6 +1,6 @@
 import { defineContentConfig, defineCollection, z } from '@nuxt/content'
-import { certificateSchema } from './app/types/certificate'
-import { projectSchema } from './app/types/project'
+import { certificateSchema } from './content/schemas/certificate'
+import { projectSchema } from './content/schemas/project'
 
 export default defineContentConfig({
   collections: {
@@ -14,8 +14,8 @@ export default defineContentConfig({
     projects: defineCollection({
       type: 'page',
       source: {
-        include: 'pages/projects/**/*.md',
-        prefix: '/'
+        include: 'projects/**/*.md',
+        prefix: '/projects/'
       },
       schema: projectSchema
     }),

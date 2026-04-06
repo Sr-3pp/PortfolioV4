@@ -1,26 +1,6 @@
 import type { ContentCollectionItem } from '@nuxt/content'
-import { z } from 'zod'
 
 export const PROJECT_TYPES = ['fulltime', 'contractor', 'freelance'] as const
-
-export const projectLinkSchema = z.object({
-  name: z.string(),
-  url: z.string(),
-  icon: z.string().optional()
-})
-
-export const projectSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  type: z.enum(PROJECT_TYPES),
-  highlight: z.boolean().optional(),
-  role: z.string().optional(),
-  period: z.string().optional(),
-  technologies: z.array(z.string()).optional(),
-  links: z.array(projectLinkSchema).optional(),
-  image: z.string().optional(),
-  cover: z.string().optional()
-})
 
 export type ProjectType = (typeof PROJECT_TYPES)[number]
 export type ProjectBuckets<T> = Record<ProjectType, T[]>
@@ -33,8 +13,23 @@ export const PROJECT_TYPE_LABELS: ProjectTypeLabelMap = {
   freelance: 'Freelance'
 }
 
-export type ProjectLink = z.infer<typeof projectLinkSchema>
-export type ProjectContent = z.infer<typeof projectSchema> & {
+export interface ProjectLink {
+  name: string
+  url: string
+  icon?: string
+}
+
+export interface ProjectContent {
+  title: string
+  description: string
+  type: ProjectType
+  highlight?: boolean
+  role?: string
+  period?: string
+  technologies?: string[]
+  links?: ProjectLink[]
+  image?: string
+  cover?: string
   updatedAt?: string
 }
 
@@ -49,7 +44,7 @@ export interface ProjectListItem {
 
 export type ProjectDocument = Omit<
   ContentCollectionItem,
-  keyof z.infer<typeof projectSchema> | 'updatedAt'
+  keyof Omit<ProjectContent, 'updatedAt'> | 'updatedAt'
 > & ProjectContent
 
 export const createProjectBuckets = <T>(): ProjectBuckets<T> => ({
@@ -70,11 +65,11 @@ export const sortProjectList = (entries: ProjectListItem[]) =>
       return leftHighlighted ? -1 : 1
     }
 
-    return String(left.title ?? '').localeCompare(String(right.title ?? ''))
+    return left.title.localeCompare(right.title)
   })
 
 export const buildProjectSearchText = (project: ProjectListItem) =>
-  `${project.title ?? ''} ${project.description ?? ''} ${(project.technologies ?? []).join(' ')}`.toLowerCase()
+  `${project.title} ${project.description} ${(project.technologies ?? []).join(' ')}`.toLowerCase()
 
 export const buildProjectSearchIndex = (projects: ProjectBuckets<ProjectListItem>): ProjectSearchIndex => {
   const index: ProjectSearchIndex = {}

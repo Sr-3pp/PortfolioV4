@@ -38,7 +38,7 @@ export const useProjects = () => {
       createProjectKey(normalizedType, normalizedSlug),
       () =>
         queryCollection('projects')
-          .where('path', 'LIKE', `%projects/${normalizedType}/${normalizedSlug}%`)
+          .where('path', 'LIKE', `%${normalizedType}/${normalizedSlug}%`)
           .first()
     )
 
