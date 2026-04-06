@@ -48,7 +48,7 @@ section
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import type { ProjectContent } from '~/types/project'
+import { getProjectTypeLabel, type ProjectContent } from '~/types/project'
 import type { JsonLdHeadScript } from '~/types/seo'
 
 const { getProjectBySlug } = useProjects()
@@ -79,6 +79,7 @@ watch(
 )
 
 const pageUrl = computed(() => absoluteUrl(route.fullPath))
+const projectTypeLabel = computed(() => getProjectTypeLabel(project.value?.meta?.type))
 
 const seoTitle = computed(() => {
   if (!project.value?.title) {
@@ -124,7 +125,7 @@ const breadcrumbSchema = computed(() => ({
     {
       '@type': 'ListItem',
       position: 2,
-      name: project.value?.meta?.type ? String(project.value.meta.type).replace(/^[a-z]/, (c) => c.toUpperCase()) : 'Projects',
+      name: projectTypeLabel.value,
       item: absoluteUrl('/#projects')
     },
     {

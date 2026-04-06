@@ -41,7 +41,16 @@ UDrawer.modal-projects(v-model:open="open" description="Hand-picked case studies
 </template>
 
 <script lang="ts" setup>
-import type { ProjectBuckets, ProjectListItem, ProjectSearchIndex, ProjectType, ProjectTypeLabelMap } from '~/types/project'
+import {
+  buildProjectSearchIndex,
+  createProjectBuckets,
+  getFirstProjectTypeWithItems,
+  PROJECT_TYPE_LABELS,
+  type ProjectBuckets,
+  type ProjectListItem,
+  type ProjectSearchIndex,
+  type ProjectType
+} from '~/types/project'
 
 const { open, closeOverlay } = useUiOverlay('projects')
 const { getProjects } = useProjects()
@@ -51,35 +60,15 @@ const debouncedQuery = ref('')
 const debounceHandle = ref<number | null>(null)
 const isLoadingProjects = ref(false)
 const hasLoadedProjects = ref(false)
-const projectTypes: ProjectType[] = ['fulltime', 'contractor', 'freelance']
-const projectTypeLabels: ProjectTypeLabelMap = {
-  fulltime: 'Fulltime',
-  contractor: 'Contractor',
-  freelance: 'Freelance'
-}
-
-const createEmptyProjectBuckets = (): ProjectBuckets<ProjectListItem> => ({
-  fulltime: [],
-  contractor: [],
-  freelance: []
-})
-
-const projects = ref<ProjectBuckets<ProjectListItem>>(createEmptyProjectBuckets())
+const projectTypeLabels = PROJECT_TYPE_LABELS
+const projects = ref<ProjectBuckets<ProjectListItem>>(createProjectBuckets())
 const projectSearchIndex = ref<ProjectSearchIndex>({})
 
 const setProjects = (value: ProjectBuckets<ProjectListItem>) => {
   projects.value = value
+  projectSearchIndex.value = buildProjectSearchIndex(value)
 
-  const nextIndex: ProjectSearchIndex = {}
-  for (const type of projectTypes) {
-    for (const project of value[type]) {
-      nextIndex[project.path] =
-        `${project.title ?? ''} ${project.description ?? ''} ${(project.meta?.technologies || []).join(' ')}`.toLowerCase()
-    }
-  }
-  projectSearchIndex.value = nextIndex
-
-  const firstNonEmpty = projectTypes.find((type) => value[type].length > 0)
+  const firstNonEmpty = getFirstProjectTypeWithItems(value)
   if (firstNonEmpty) activeTab.value = firstNonEmpty
 }
 
@@ -164,9 +153,6 @@ const filterProjects = (type: ProjectType): ProjectListItem[] => {
       filtered.push(project)
     }
   }
-
-  console.log(`Filtering projects by type "${type}" with query "${normalizedQuery}" - ${filtered.length} matches found`)
-  console.log('Filtered projects:', filtered)
 
   return filtered
 }
