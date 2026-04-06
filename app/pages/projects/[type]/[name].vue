@@ -17,16 +17,15 @@ section
                 :href="link.url"
                 target="_blank"
                 rel="noopener"
-                color="primary" 
+                color="primary"
                 variant="soft"
                 size="sm"
                 class="mr-2 mb-2"
-                :icon="link.icon || 'i-heroicons-arrow-top-right-on-square'"
               ) {{ link.name }}
               
           div.grid.gap-4(class="grid-cols-1 md:grid-cols-3")
             div(class="md:col-span-2 space-y-4")
-              ContentRenderer.gap-6.flex.flex-col(:value="project")
+              ContentRenderer.gap-6.flex.flex-col(v-if="'body' in project" :value="project")
             div(class="md:col-span-1 space-y-4")
               div.rounded-lg.border.p-4(class="border-white/10 bg-white/5")
                 div.text-sm.flex.items-center.gap-2(class="text-white/60")
@@ -48,14 +47,14 @@ section
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { getProjectTypeLabel, type ProjectContent } from '~/types/project'
+import { getProjectTypeLabel, type ProjectDocument } from '~/types/project'
 import type { JsonLdHeadScript } from '~/types/seo'
 
 const { getProjectBySlug } = useProjects()
 const route = useRoute()
 const { siteDescription, absoluteUrl, defaultImage } = useSiteMeta()
 
-const project = ref<ProjectContent | null>(null)
+const project = ref<ProjectDocument | null>(null)
 
 const loadProject = async () => {
   const { type, name } = route.params
@@ -66,7 +65,7 @@ const loadProject = async () => {
   }
 
   const result = await getProjectBySlug(type, name)
-  project.value = (result ?? null) as ProjectContent | null
+  project.value = result ?? null
 }
 
 await loadProject()

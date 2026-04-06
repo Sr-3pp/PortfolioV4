@@ -35,8 +35,9 @@ export const useProjects = () => {
       return null
     }
 
+    const projectPath = `/projects/${normalizedType}/${normalizedSlug}`
     const project = await queryCollection('projects')
-      .where('path', 'LIKE', `%${normalizedType}/${normalizedSlug}%`)
+      .path(projectPath)
       .first()
 
     return (project as ProjectDocument | null | undefined) ?? null
