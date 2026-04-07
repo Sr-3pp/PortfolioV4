@@ -8,11 +8,22 @@ const resumeOverlay = useUiOverlay('resume');
 
 const route = useRoute();
 const currentPath = computed(() => route.path);
+const showEnhancements = ref(false);
 
 const openCerts = () => certOverlay.openOverlay();
 const openProjects = () => projectsOverlay.openOverlay();
 const openContact = () => contactOverlay.openOverlay();
 const openResume = () => resumeOverlay.openOverlay();
+
+onMounted(() => {
+  const schedule = globalThis.requestIdleCallback
+    ? (callback: () => void) => globalThis.requestIdleCallback(callback, { timeout: 1200 })
+    : (callback: () => void) => window.setTimeout(callback, 250)
+
+  schedule(() => {
+    showEnhancements.value = true;
+  });
+});
 
 const templateBindings = {
   currentPath,
@@ -31,19 +42,36 @@ section.flex.items-center.justify-center.bg-gradient-to-b.from-gray-900.to-black
   UContainer.flex(class="sm:flex-row" :class="{'flex-col': currentPath === '/'}")
     div.w-full(class="sm:w-1/2")
       NuxtLink.relative.transition-all.duration-500.ease-out.flex(to="/" :class="{'sm:-bottom-10': currentPath !== '/'}")
-        NeonTriangle(:class="{'scale-[2]': currentPath !== '/'}" class="sm:scale-[1]")
-          NuxtImg(
+        NeonTriangle(
+          v-if="showEnhancements"
+          class="relative min-h-[18rem] w-full sm:min-h-[24rem] sm:scale-[1]"
+          :class="{'scale-[2]': currentPath !== '/'}"
+        )
+          img(
             src="/img/3pp.webp"
             alt="SR3PP"
             width="300"
             height="300"
             class="w-2/3 absolute z-2 bottom-0 left-1/2 transform -translate-x-1/2 border-primary transition-all duration-500 ease-out"
-            priority
+            fetchpriority="high"
+            decoding="async"
+          )
+        div(v-else class="relative min-h-[18rem] w-full sm:min-h-[24rem] sm:scale-[1]")
+          img(
+            src="/img/3pp.webp"
+            alt="SR3PP"
+            width="300"
+            height="300"
+            class="w-2/3 absolute z-2 bottom-0 left-1/2 transform -translate-x-1/2 border-primary transition-all duration-500 ease-out"
+            fetchpriority="high"
+            decoding="async"
           )
     div.w-full.flex.flex-col.items-center.justify-center.gap-6(class="sm:w-1/2")
       h1.transition-opacity.duration-500.text-xl.font-bold(class="sm:text-2xl md:text-4xl" :class="{'hidden': currentPath !== '/'}") Martin Ruiz
 
-      SlotMachine.transition-opacity.duration-500(class="w-full sm:w-2/3" :class="{'!hidden': currentPath !== '/'}" :labels="['💻Vue Expert', '🐞Bug Hunter', '🧞Nuxt Guru']")
+      template(v-if="currentPath === '/'")
+        SlotMachine.transition-opacity.duration-500(v-if="showEnhancements" class="w-full sm:w-2/3" :labels="['Vue Expert', 'Bug Hunter', 'Nuxt Guru']")
+        p.text-center.text-sm.font-semibold.tracking-wide.text-cyan-300.uppercase(v-else) Senior Vue and Nuxt Engineer
       
       ul.flex.gap-5.mx-auto.transition-all.duration-500.flex-wrap.justify-center(:class="{'flex-col items-stretch': currentPath === '/', 'flex-row': currentPath !== '/'}")
         li
