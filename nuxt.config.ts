@@ -1,7 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const isProduction = process.env.NODE_ENV === 'production'
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  ui: {
+    fonts: false
+  },
   sourcemap: {
     client: false,
     server: false
@@ -70,10 +75,14 @@ export default defineNuxtConfig({
     }
   },
   routeRules: {
-    '/': { swr: 3600 },
-    '/about': { swr: 3600 },
-    '/projects/**': { swr: 3600 },
-    '/sitemap.xml': { swr: 3600 },
+    ...(isProduction
+      ? {
+          '/': { swr: 3600 },
+          '/about': { swr: 3600 },
+          '/projects/**': { swr: 3600 },
+          '/sitemap.xml': { swr: 3600 }
+        }
+      : {}),
     '/__nuxt_studio/**': {
       headers: {
         'cache-control': 'no-store, no-cache, must-revalidate'

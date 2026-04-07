@@ -171,7 +171,7 @@ ul.slot-machine(@mouseover="handleMouseEnter" @mouseleave="handleMouseLeave")
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: "REM";
+  font-family: var(--font-sans);
   font-weight: bold;
   font-size: 1.5rem;
   height: 50px;

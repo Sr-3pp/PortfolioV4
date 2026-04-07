@@ -10,7 +10,9 @@
     <LazyModalProjects v-if="showProjectsModal" />
     <LazyModalContact v-if="showContactModal" />
     <LazyModalResume v-if="showResumeModal" />
-    <Stars />
+    <ClientOnly>
+      <Stars v-if="showStars" />
+    </ClientOnly>
   </main>
 </template>
 
@@ -41,4 +43,16 @@
   const showProjectsModal = createLazyModalFlag(projectsOverlay.open)
   const showContactModal = createLazyModalFlag(contactOverlay.open)
   const showResumeModal = createLazyModalFlag(resumeOverlay.open)
+
+  const showStars = ref(false)
+
+  onMounted(() => {
+    const schedule = globalThis.requestIdleCallback
+      ? (callback: () => void) => globalThis.requestIdleCallback(callback, { timeout: 1200 })
+      : (callback: () => void) => window.setTimeout(callback, 400)
+
+    schedule(() => {
+      showStars.value = true
+    })
+  })
 </script>
